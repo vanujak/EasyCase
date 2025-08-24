@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import NavbarHome from "../../components/NavbarHome.jsx";
-
-const DISTRICTS = [
-  "Colombo","Gampaha","Kalutara","Kandy","Matale","Nuwara Eliya",
-  "Galle","Matara","Hambantota","Jaffna","Kilinochchi","Mannar",
-  "Vavuniya","Mullaitivu","Batticaloa","Ampara","Trincomalee",
-  "Kurunegala","Puttalam","Anuradhapura","Polonnaruwa",
-  "Badulla","Monaragala","Ratnapura","Kegalle"
-];
+const API = import.meta.env.VITE_API_URL;
 
 export default function Signup() {
   const [form, setForm] = useState({
@@ -18,20 +11,50 @@ export default function Signup() {
     dob: "",
     gender: "",
     barRegNo: "",
-    district: "",
+    password: "",
+    confirmPassword:""
   });
 
   const onChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   };
+  const [error, setError] = useState("");
 
-  const onSubmit = (e) => {
-    e.preventDefault(); // no backend yet
-    // later: call your API; for now just log
-    console.log("signup payload", form);
-    alert("Signup UI submitted (no backend wired yet).");
-  };
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (form.password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    const { confirmPassword, ...payload } = form;
+
+    try {
+      const res = await fetch(`${API}/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Signup failed");
+      }
+
+      const data = await res.json();
+      alert(`Signup success! Welcome, ${data.name || payload.name}`);
+      // (optional) navigate to login page here
+    } catch (err) {
+      setError(err.message);
+    }
+};
 
   return (
     <main className="flex-1">
@@ -133,23 +156,38 @@ export default function Signup() {
                 required
               />
             </div>
+            {/* Password */}
+           <div>
+          <label className="block text-sm mb-1">Password</label>
+          <input
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={onChange}
+            placeholder="At least 8 characters"
+            className="w-full rounded-lg border px-4 py-2"
+            required
+            minLength={8}
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Use at least 8 characters. Add numbers & symbols for a stronger password.
+          </p>
+        </div>
 
-            {/* District */}
-            <div>
-              <label className="block text-sm mb-1">District</label>
-              <select
-                name="district"
-                value={form.district}
-                onChange={onChange}
-                className="w-full rounded-lg border px-4 py-2 bg-white"
-                required
-              >
-                <option value="" disabled>Select district</option>
-                {DISTRICTS.map((d) => (
-                  <option key={d} value={d}>{d}</option>
-                ))}
-              </select>
-            </div>
+          {/* Confirm Password */}
+          <div>
+            <label className="block text-sm mb-1">Confirm Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={form.confirmPassword}
+              onChange={onChange}
+              placeholder="Re-enter password"
+              className="w-full rounded-lg border px-4 py-2"
+              required
+              minLength={8}
+            />
+          </div>
 
             <button
               type="submit"

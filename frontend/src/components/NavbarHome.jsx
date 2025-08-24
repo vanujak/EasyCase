@@ -9,7 +9,7 @@ export default function NavbarHome() {
     <nav className="border-b bg-white">
       <div className="mx-auto max-w-6xl h-20 px-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <img src="../easy-case-logo.png" alt="EasyCase logo" className="h-15 w-15 object-contain" />
+          <img src="/easy-case-logo.png" alt="EasyCase logo" className="h-15 w-15 object-contain" />
           <span className="!text-[30px] font-semibold">EasyCase</span>
         </Link>
 
