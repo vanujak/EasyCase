@@ -6,4 +6,4 @@ export const COURT_TYPES = [
   "Supreme Court",
 ];
 
-export const CASE_STATUSES = ["open", "on-hold", "closed"];
+export const CASE_STATUSES = ["open", "closed"];

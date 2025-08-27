@@ -1,13 +1,17 @@
+// backend/src/models/Hearing.js
 import mongoose from "mongoose";
+const { Schema } = mongoose;
 
-const hearingSchema = new mongoose.Schema(
+export const OUTCOMES = ["Adjourned", "Continued", "Judgment", "Settled", "Other"];
+
+const hearingSchema = new Schema(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
-    caseId: { type: mongoose.Schema.Types.ObjectId, ref: "Case", required: true, index: true },
-    date:   { type: Date, required: true, index: true },
-    venue:  String,
-    notes:  String,
-    outcome:String,
+    userId:  { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
+    caseId:  { type: Schema.Types.ObjectId, ref: "Case", required: true, index: true },
+    date:    { type: Date, required: true, index: true },
+    notes:   { type: String, maxlength: 1000 },
+    outcome: { type: String, enum: OUTCOMES, required: true },
+    nextDate:{ type: Date },
   },
   { timestamps: true }
 );

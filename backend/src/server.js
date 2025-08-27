@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { connectDB } from "./db/mongoose.js";
 import authRoutes from "./routes/auth.routes.js";
+import authMiddleware from "./middleware/auth.js";
 
 // 👇 NEW: multi-tenant resource routers
 import clientsRouter from "./routes/clients.routes.js";
@@ -27,7 +28,7 @@ app.use("/auth", authRoutes);
 // 👇 NEW: protected data routes (use requireAuth inside each router)
 app.use("/api/clients", clientsRouter);
 app.use("/api/cases", casesRouter);
-app.use("/api/hearings", hearingsRouter);
+app.use("/api/hearings",authMiddleware,hearingsRouter);
 
 // 404 fallback
 app.use((req, res) => res.status(404).json({ error: "Not found" }));

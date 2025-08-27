@@ -1,91 +1,184 @@
 import express from "express";
-import { requireAuth } from "../middleware/auth.js";
-import Hearing from "../models/Hearing.js";
+import mongoose from "mongoose";
+import Hearing, { OUTCOMES } from "../models/Hearing.js";
 import Case from "../models/Case.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
-
-// All hearings routes require auth
 router.use(requireAuth);
 
-/**
- * GET /api/hearings
- * List all hearings for the current user (optionally by caseId, and/or upcoming only)
- * Query: ?caseId=...&from=ISO&to=ISO
- */
-router.get("/", async (req, res) => {
-  const { caseId, from, to } = req.query;
-
-  const filter = { userId: req.userId };
-  if (caseId) filter.caseId = caseId;
-  if (from || to) {
-    filter.date = {};
-    if (from) filter.date.$gte = new Date(from);
-    if (to) filter.date.$lte = new Date(to);
-  }
-
-  const items = await Hearing.find(filter)
-    .sort({ date: 1 })
-    .limit(200)
-    .lean();
-
-  res.json(items);
-});
+/** Convert 'YYYY-MM-DD' to a Date at local midnight. Accepts ISO too. */
+function toDateOrNull(value) {
+  if (!value) return null;
+  // If it's already ISO, try native parse
+  if (typeof value === "string" && value.includes("T")) {
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? null : d;
+    }
+  if (typeof value !== "string") return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!m) return null;
+  const [_, y, mo, d] = m.map(Number);
+  const dt = new Date(y, mo - 1, d, 0, 0, 0, 0);
+  return Number.isNaN(dt.getTime()) ? null : dt;
+}
 
 /**
  * POST /api/hearings
- * Body: { caseId, date, venue?, notes?, outcome? }
+ * Body: { caseId(ObjectId), date(YYYY-MM-DD or ISO), notes?, outcome(one of OUTCOMES), nextDate(YYYY-MM-DD or ISO)? }
  */
 router.post("/", async (req, res) => {
-  const body = req.body || {};
+  try {
+    const userId = req.userId;
+    const { caseId, date, notes, outcome, nextDate } = req.body;
 
-  // Validate the case belongs to this user
-  const kase = await Case.findOne({ _id: body.caseId, userId: req.userId });
-  if (!kase) return res.status(400).json({ error: "Invalid caseId" });
+    if (!mongoose.isValidObjectId(caseId)) {
+      return res.status(400).json({ error: "Invalid caseId" });
+    }
 
-  const doc = await Hearing.create({
-    ...body,
-    userId: req.userId,
-  });
+    // Ensure the case belongs to this user
+    const parent = await Case.findOne({ _id: caseId, userId }).select("_id").lean();
+    if (!parent) return res.status(404).json({ error: "Case not found" });
 
-  res.status(201).json(doc);
-});
+    const dateObj = toDateOrNull(date);
+    if (!dateObj) return res.status(400).json({ error: "Invalid hearing date" });
 
-/**
- * GET /api/hearings/:id
- */
-router.get("/:id", async (req, res) => {
-  const doc = await Hearing.findOne({ _id: req.params.id, userId: req.userId }).lean();
-  if (!doc) return res.status(404).json({ error: "Not found" });
-  res.json(doc);
-});
+    if (!OUTCOMES.includes(outcome)) {
+      return res.status(400).json({ error: "Invalid outcome" });
+    }
 
-/**
- * PUT /api/hearings/:id
- */
-router.put("/:id", async (req, res) => {
-  // If caseId is changing, validate ownership
-  if (req.body?.caseId) {
-    const ok = await Case.exists({ _id: req.body.caseId, userId: req.userId });
-    if (!ok) return res.status(400).json({ error: "Invalid caseId" });
+    let nextDateObj = undefined;
+    if (typeof nextDate !== "undefined" && nextDate !== null && nextDate !== "") {
+      nextDateObj = toDateOrNull(nextDate);
+      if (!nextDateObj) return res.status(400).json({ error: "Invalid nextDate" });
+      if (nextDateObj.getTime() < dateObj.getTime()) {
+        return res.status(400).json({ error: "nextDate cannot be earlier than date" });
+      }
+    }
+
+    const created = await Hearing.create({
+      userId,
+      caseId: parent._id,
+      date: dateObj,
+      notes: notes?.trim() || undefined,
+      outcome,
+      nextDate: nextDateObj,
+    });
+
+    res.status(201).json(created);
+  } catch (err) {
+    console.error("POST /api/hearings error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
-
-  const updated = await Hearing.findOneAndUpdate(
-    { _id: req.params.id, userId: req.userId },
-    req.body,
-    { new: true }
-  );
-  if (!updated) return res.status(404).json({ error: "Not found" });
-  res.json(updated);
 });
 
 /**
- * DELETE /api/hearings/:id
+ * GET /api/hearings?caseId=<mongoId>  or  ?caseNumber=<int>
+ * Lists hearings for a case (owned by current user). Sorted oldest→newest.
+ */
+router.get("/", async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { caseId, caseNumber } = req.query;
+
+    const q = { userId };
+
+    if (caseId) {
+      if (!mongoose.isValidObjectId(caseId)) {
+        return res.status(400).json({ error: "Invalid caseId" });
+      }
+      q.caseId = caseId;
+    } else if (caseNumber) {
+      const parent = await Case.findOne({ userId, number: Number(caseNumber) })
+        .select("_id").lean();
+      if (!parent) return res.json([]); // no such case for this user
+      q.caseId = parent._id;
+    } else {
+      return res.status(400).json({ error: "caseId or caseNumber is required" });
+    }
+
+    const items = await Hearing.find(q).sort({ date: 1, createdAt: 1 }).lean();
+    res.json(items);
+  } catch (err) {
+    console.error("GET /api/hearings error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+/**
+ * OPTIONAL: PATCH /api/hearings/:id
+ */
+router.patch("/:id", async (req, res) => {
+  try {
+    const userId = req.userId;
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: "Invalid hearing id" });
+    }
+
+    const update = {};
+    const { date, notes, outcome, nextDate } = req.body;
+
+    if (typeof notes === "string") update.notes = notes;
+    if (typeof outcome !== "undefined") {
+      if (!OUTCOMES.includes(outcome)) {
+        return res.status(400).json({ error: "Invalid outcome" });
+      }
+      update.outcome = outcome;
+    }
+    if (typeof date !== "undefined") {
+      const d = toDateOrNull(date);
+      if (!d) return res.status(400).json({ error: "Invalid date" });
+      update.date = d;
+    }
+    if (typeof nextDate !== "undefined") {
+      if (nextDate === null || nextDate === "") {
+        update.nextDate = undefined; // will unset below
+      } else {
+        const nd = toDateOrNull(nextDate);
+        if (!nd) return res.status(400).json({ error: "Invalid nextDate" });
+        update.nextDate = nd;
+      }
+    }
+
+    // Validate nextDate >= date
+    const current = await Hearing.findOne({ _id: req.params.id, userId }).lean();
+    if (!current) return res.status(404).json({ error: "Not found" });
+
+    const newDate = update.date ?? current.date;
+    const newNext = update.hasOwnProperty("nextDate") ? update.nextDate : current.nextDate;
+    if (newNext && newDate && newNext.getTime() < newDate.getTime()) {
+      return res.status(400).json({ error: "nextDate cannot be earlier than date" });
+    }
+
+    const updated = await Hearing.findOneAndUpdate(
+      { _id: req.params.id, userId },
+      { ...update, ...(update.nextDate === undefined ? { $unset: { nextDate: "" } } : {}) },
+      { new: true }
+    ).lean();
+
+    res.json(updated);
+  } catch (err) {
+    console.error("PATCH /api/hearings/:id error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+/**
+ * OPTIONAL: DELETE /api/hearings/:id
  */
 router.delete("/:id", async (req, res) => {
-  const deleted = await Hearing.findOneAndDelete({ _id: req.params.id, userId: req.userId });
-  if (!deleted) return res.status(404).json({ error: "Not found" });
-  res.json({ ok: true });
+  try {
+    const userId = req.userId;
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: "Invalid hearing id" });
+    }
+    const del = await Hearing.findOneAndDelete({ _id: req.params.id, userId }).lean();
+    if (!del) return res.status(404).json({ error: "Not found" });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("DELETE /api/hearings/:id error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
-export default router; // 👈 IMPORTANT
+export default router;
