@@ -51,12 +51,6 @@ export default function NavbarDashboard() {
           <NavLink to="/clients" className={cls}>
             Clients
           </NavLink>
-          <NavLink to="/calendar" className={cls}>
-            Calendar
-          </NavLink>
-          <NavLink to="/settings" className={cls}>
-            Settings
-          </NavLink>
 
           <button
             onClick={handleLogout}

@@ -65,3 +65,23 @@ export async function login(req, res) {
     res.status(500).json({ error: "login_failed" });
   }
 }
+export async function me(req, res) {
+  try {
+    const user = await User.findById(req.userId)
+      .select("name email mobile barRegNo createdAt")
+      .lean();
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      mobile: user.mobile,
+      barRegNo: user.barRegNo,
+      createdAt: user.createdAt,
+    });
+  } catch (err) {
+    console.error("GET /auth/me error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}

@@ -47,13 +47,16 @@ export default function CaseDetailOverlay({ caseId, onClose }) {
   }, [caseId]);
 
   const nextHearingLabel = useMemo(() => {
-    const now = Date.now();
-    const fromFutureDates = hearings
-      .map((h) => new Date(h.date).getTime())
-      .filter((t) => t > now)
-      .sort((a, b) => a - b)[0];
-    return fromFutureDates ? new Date(fromFutureDates).toLocaleString() : null;
+    // take the hearing with the latest (max) date that has a nextDate
+    const withNext = (hearings || []).filter(h => h.nextDate);
+    if (!withNext.length) return null;
+
+    const latest = withNext.reduce((a, b) =>
+      new Date(a.date) > new Date(b.date) ? a : b
+    );
+    return new Date(latest.nextDate).toLocaleDateString();
   }, [hearings]);
+  
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40">
@@ -144,16 +147,29 @@ function Timeline({ startedAt, hearings }) {
   // Build items (newest first; “Case started” last at the bottom)
   const items = [
     ...(hearings || [])
-      .slice()
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .map((h, i) => ({
-        key: h._id || `h-${i}`,
-        side: i % 2 === 0 ? "left" : "right",
-        title: `Next hearing: ${new Date(h.date).toLocaleDateString()}`,
-        subtitle: h.venue || null,
-        body: h.notes || "",
-        footer: h.outcome ? `Outcome: ${h.outcome}` : null,
-      })),
+  .slice()
+  .sort((a, b) => new Date(b.date) - new Date(a.date))
+  .map((h, i) => {
+    const isLatest = i === 0;              // newest card only
+    const hasNext  = Boolean(h.nextDate);
+    const title    = isLatest && hasNext
+      ? `Next hearing: ${new Date(h.nextDate).toLocaleDateString()}`
+      : new Date(h.date).toLocaleDateString();
+
+    // Only show nextDate in the footer for the latest card
+    const footerBits = [
+      h.outcome ? `Outcome: ${h.outcome}` : null,
+    ].filter(Boolean);
+
+    return {
+      key: h._id || `h-${i}`,
+      side: i % 2 === 0 ? "left" : "right",
+      title,
+      subtitle: h.venue || null,
+      body: h.notes || "",
+      footer: footerBits.length ? footerBits.join("  •  ") : null,
+    };
+  }),
     {
       key: "start",
       side: (hearings?.length ?? 0) % 2 === 0 ? "left" : "right",

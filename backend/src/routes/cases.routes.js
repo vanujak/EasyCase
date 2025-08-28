@@ -3,7 +3,6 @@ import express from "express";
 import { requireAuth } from "../middleware/auth.js";
 import Case from "../models/Case.js";
 import Client from "../models/Client.js";
-
 const router = express.Router();
 
 // All routes require auth (populates req.userId)
@@ -34,12 +33,20 @@ router.get("/", async (req, res) => {
     const filter = { userId: req.userId };
 
     if (q) {
-      // search by title or number as string
-      filter.$or = [
-        { title:   new RegExp(q, "i") },
-        // if number is numeric in the schema, match as string by casting
-        { numberText: new RegExp(q, "i") }, // see virtual below if you want
-      ];
+      // allow "#123", "123", and title regex
+      const cleaned = q.replace(/^#/, "").trim();
+      const maybeNum = Number(cleaned);
+
+      const or = [{ title: new RegExp(q, "i") }];
+
+      // exact numeric match when q parses as a number
+      if (!Number.isNaN(maybeNum)) {
+        or.push({
+           $expr: { $regexMatch: { input: { $toString: "$number" }, regex: cleaned } }
+        });
+      }
+
+      filter.$or = or;
     }
     if (req.query.courtType)  filter.courtType  = req.query.courtType;
     if (req.query.courtPlace) filter.courtPlace = req.query.courtPlace;
