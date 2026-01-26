@@ -13,12 +13,14 @@ import hearingsRouter from "./routes/hearings.routes.js";
 const app = express();
 
 // FIXED: Added PATCH to allowed methods
+app.set("trust proxy", 1);
 app.use(cors({ 
-  origin: ["http://localhost:5173", "https://easy-case.vercel.app", "https://easycase.site"], 
+  origin: ["http://localhost:5173", "https://easy-case.vercel.app", "https://www.easycase.site", "https://easycase.site"], 
   credentials: true, 
   allowedHeaders: ["Content-Type", "Authorization"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] // Added PATCH here
 }));
+app.options("*", cors());
 
 app.use(express.json());
 
