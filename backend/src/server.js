@@ -14,7 +14,7 @@ const app = express();
 
 // FIXED: Added PATCH to allowed methods
 app.use(cors({ 
-  origin: ["http://localhost:5173", "https://easy-case.vercel.app"], 
+  origin: ["http://localhost:5173", "https://easy-case.vercel.app", "https://easycase.site"], 
   credentials: true, 
   allowedHeaders: ["Content-Type", "Authorization"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] // Added PATCH here
