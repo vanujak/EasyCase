@@ -11,17 +11,14 @@ import casesRouter from "./routes/cases.routes.js";
 import hearingsRouter from "./routes/hearings.routes.js";
 
 const app = express();
-
-// FIXED: Added PATCH to allowed methods
 app.set("trust proxy", 1);
+// FIXED: Added PATCH to allowed methods
 app.use(cors({ 
   origin: ["http://localhost:5173", "https://easy-case.vercel.app", "https://www.easycase.site", "https://easycase.site"], 
   credentials: true, 
   allowedHeaders: ["Content-Type", "Authorization"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] // Added PATCH here
 }));
-app.options("*", cors());
-
 app.use(express.json());
 
 // connect to Atlas before serving requests
