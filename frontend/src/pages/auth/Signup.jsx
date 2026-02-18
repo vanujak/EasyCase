@@ -154,7 +154,7 @@ export default function Signup() {
                 required
               />
             </div>
-            {/* Password */}
+           {/* Password */}
            <div>
           <label className="block text-sm mb-1">Password</label>
           <input
