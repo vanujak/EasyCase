@@ -159,32 +159,32 @@ export default function Clients() {
 
   // ---------- UI ----------
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-colors duration-150">
       <NavbarDashboard />
 
       <div className="mx-auto max-w-6xl px-4 py-8">
 
         {/* === STICKY HEADER === */}
-        <div className="sticky top-0 z-40 bg-gray-50 pb-4 border-b border-gray-50">
+        <div className="sticky top-0 z-40 bg-gray-50 dark:bg-slate-950 pb-4 border-b border-gray-200 dark:border-slate-800 transition-colors">
           
           {/* Title + Button */}
           <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-            <h1 className="text-2xl font-bold">Clients</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Clients</h1>
             <button
               onClick={openCreate}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-white font-semibold shadow hover:bg-blue-700"
+              className="rounded-lg bg-blue-600 hover:bg-blue-700 px-4 py-2 text-white font-semibold shadow transition"
             >
               + New client
             </button>
           </div>
 
           {/* Filter Box */}
-          <div className="mt-6 bg-white rounded-xl border p-4 shadow-sm">
+          <div className="mt-6 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-4 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Filters</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h2>
               <button
                 onClick={() => setFiltersOpen((prev) => !prev)}
-                className="md:hidden rounded-md border px-3 py-1 text-sm"
+                className="md:hidden rounded-md border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1 text-sm text-gray-700 dark:text-slate-300"
               >
                 {filtersOpen ? "Hide" : "Show"}
               </button>
@@ -197,17 +197,17 @@ export default function Clients() {
                 
                 {/* Search - takes more space */}
                 <div className="md:col-span-5">
-                  <label className="block text-sm font-medium mb-1">Search by name</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Search by name</label>
                   <div className="flex gap-2">
                     <input
                       value={q}
                       onChange={(e) => setQ(e.target.value)}
                       placeholder="e.g., John"
-                      className="flex-1 rounded-lg border px-3 py-2"
+                      className="flex-1 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <button
                       onClick={fetchClients}
-                      className="rounded-lg bg-black px-4 py-2 text-white font-semibold whitespace-nowrap"
+                      className="rounded-lg bg-black hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 py-2 text-white font-semibold whitespace-nowrap transition shadow-sm"
                     >
                       Search
                     </button>
@@ -216,11 +216,11 @@ export default function Clients() {
 
                 {/* Client Type */}
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-1">Client type</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Client type</label>
                   <select
                     value={typeFilter}
                     onChange={(e) => setTypeFilter(e.target.value)}
-                    className="w-full rounded-lg border px-3 py-2 bg-white"
+                    className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100"
                   >
                     <option value="">All</option>
                     <option value="individual">Individual</option>
@@ -232,11 +232,11 @@ export default function Clients() {
 
                 {/* District */}
                 <div className="md:col-span-3">
-                  <label className="block text-sm font-medium mb-1">District</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">District</label>
                   <select
                     value={districtFilter}
                     onChange={(e) => setDistrictFilter(e.target.value)}
-                    className="w-full rounded-lg border px-3 py-2 bg-white"
+                    className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100"
                   >
                     <option value="">All</option>
                     {SRI_LANKA_DISTRICTS.map((d) => (
@@ -254,7 +254,7 @@ export default function Clients() {
                       setDistrictFilter("");
                       fetchClients();
                     }}
-                    className="w-full rounded-lg border px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap"
+                    className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 whitespace-nowrap transition"
                   >
                     Reset filters
                   </button>
@@ -264,7 +264,7 @@ export default function Clients() {
           </div>
         </div>
 
-        {error && <p className="mt-4 text-red-600">{error}</p>}
+        {error && <p className="mt-4 text-red-600 dark:text-red-400">{error}</p>}
 
         {/* ------------------ LIST SECTION ------------------ */}
         <div className="mt-2 relative z-0">
@@ -272,31 +272,31 @@ export default function Clients() {
           {/* MOBILE CARD VIEW */}
           <div className="space-y-3 md:hidden">
             {loading ? (
-              <p className="text-gray-500 text-center py-6">Loading…</p>
+              <p className="text-gray-500 dark:text-slate-400 text-center py-6">Loading…</p>
             ) : filtered.length === 0 ? (
-              <p className="text-gray-500 text-center py-6">No clients match your filters.</p>
+              <p className="text-gray-500 dark:text-slate-400 text-center py-6">No clients match your filters.</p>
             ) : (
               filtered.map((c) => (
-                <div key={c._id} className="rounded-xl border bg-white p-4 shadow-sm">
-                  <p className="font-semibold">{c.name}</p>
-                  <p className="text-sm text-gray-600 capitalize">{c.type}</p>
+                <div key={c._id} className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+                  <p className="font-semibold text-gray-900 dark:text-white text-lg">{c.name}</p>
+                  <p className="text-sm text-gray-600 dark:text-slate-400 capitalize">{c.type}</p>
 
-                  <div className="mt-2 text-sm">
-                    <p><span className="font-medium">Email:</span> {c.email || "—"}</p>
-                    <p><span className="font-medium">Phone:</span> {c.phone || "—"}</p>
-                    <p><span className="font-medium">District:</span> {c.district || "—"}</p>
+                  <div className="mt-2 text-sm text-gray-600 dark:text-slate-400 space-y-1">
+                    <p><span className="font-medium text-gray-900 dark:text-slate-200">Email:</span> {c.email || "—"}</p>
+                    <p><span className="font-medium text-gray-900 dark:text-slate-200">Phone:</span> {c.phone || "—"}</p>
+                    <p><span className="font-medium text-gray-900 dark:text-slate-200">District:</span> {c.district || "—"}</p>
                   </div>
 
-                  <div className="mt-4 flex gap-2">
+                  <div className="mt-4 flex gap-2 pt-3 border-t border-gray-200 dark:border-slate-800">
                     <button
                       onClick={() => openEdit(c)}
-                      className="flex-1 rounded-lg border px-3 py-2 font-medium hover:bg-gray-50"
+                      className="flex-1 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 font-medium text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => removeClient(c)}
-                      className="flex-1 rounded-lg border px-3 py-2 font-medium text-red-600 hover:bg-red-50"
+                      className="flex-1 rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/40 px-3 py-2 font-medium text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 transition"
                     >
                       Delete
                     </button>
@@ -307,9 +307,9 @@ export default function Clients() {
           </div>
 
           {/* DESKTOP TABLE */}
-          <div className="hidden md:block overflow-x-auto rounded-xl border bg-white shadow-sm">
+          <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
             <table className="min-w-full text-sm">
-              <thead className="bg-gray-100 text-left">
+              <thead className="bg-gray-100 dark:bg-slate-800/80 text-gray-700 dark:text-slate-300 text-left">
                 <tr>
                   <th className="px-4 py-3">Type</th>
                   <th className="px-4 py-3">Name</th>
@@ -321,21 +321,21 @@ export default function Clients() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={6} className="px-4 py-6">Loading…</td></tr>
+                  <tr><td colSpan={6} className="px-4 py-6 text-gray-500 dark:text-slate-400">Loading…</td></tr>
                 ) : filtered.length === 0 ? (
-                  <tr><td colSpan={6} className="px-4 py-10 text-center text-gray-500">No clients match your filters.</td></tr>
+                  <tr><td colSpan={6} className="px-4 py-10 text-center text-gray-500 dark:text-slate-400">No clients match your filters.</td></tr>
                 ) : (
                   filtered.map((c) => (
-                    <tr key={c._id} className="border-t">
-                      <td className="px-4 py-3 capitalize">{c.type}</td>
-                      <td className="px-4 py-3 font-medium">{c.name}</td>
-                      <td className="px-4 py-3">{c.email || "—"}</td>
-                      <td className="px-4 py-3">{c.phone || "—"}</td>
-                      <td className="px-4 py-3">{c.district || "—"}</td>
+                    <tr key={c._id} className="border-t border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <td className="px-4 py-3 capitalize text-gray-900 dark:text-slate-200">{c.type}</td>
+                      <td className="px-4 py-3 font-medium text-gray-900 dark:text-slate-100">{c.name}</td>
+                      <td className="px-4 py-3 text-gray-700 dark:text-slate-300">{c.email || "—"}</td>
+                      <td className="px-4 py-3 text-gray-700 dark:text-slate-300">{c.phone || "—"}</td>
+                      <td className="px-4 py-3 text-gray-700 dark:text-slate-300">{c.district || "—"}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-2">
-                          <button onClick={() => openEdit(c)} className="rounded-md border px-3 py-1 hover:bg-gray-50">Edit</button>
-                          <button onClick={() => removeClient(c)} className="rounded-md border px-3 py-1 text-red-600 hover:bg-red-50">Delete</button>
+                          <button onClick={() => openEdit(c)} className="rounded-md border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1 text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition">Edit</button>
+                          <button onClick={() => removeClient(c)} className="rounded-md border border-red-300 dark:border-red-900/50 bg-white dark:bg-slate-800 px-3 py-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition">Delete</button>
                         </div>
                       </td>
                     </tr>
@@ -350,17 +350,17 @@ export default function Clients() {
 
       {/* MODAL */}
       {open && (
-        <div className="fixed inset-0 z-[1000] grid place-items-center bg-black/40 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+        <div className="fixed inset-0 z-[1000] grid place-items-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-gray-900 dark:text-slate-100 p-6 shadow-2xl transition-colors">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">{editing ? "Edit client" : "New client"}</h2>
-              <button onClick={closeModal} className="rounded-md p-1 hover:bg-gray-100">✕</button>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{editing ? "Edit client" : "New client"}</h2>
+              <button onClick={closeModal} className="rounded-md p-1 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-slate-400 transition">✕</button>
             </div>
             <form onSubmit={submitForm} className="mt-4 grid gap-3">
               <div className="grid md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm mb-1">Type</label>
-                  <select name="type" value={form.type} onChange={onChange} className="w-full rounded-lg border px-3 py-2 bg-white">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Type</label>
+                  <select name="type" value={form.type} onChange={onChange} className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100">
                     <option value="individual">Individual</option>
                     <option value="company">Company</option>
                     <option value="government">Government</option>
@@ -368,37 +368,37 @@ export default function Clients() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Name</label>
-                  <input name="name" value={form.name} onChange={onChange} className="w-full rounded-lg border px-3 py-2" required />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Name</label>
+                  <input name="name" value={form.name} onChange={onChange} className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500" placeholder="Full name" required />
                 </div>
               </div>
               <div className="grid md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm mb-1">Email</label>
-                  <input type="email" name="email" value={form.email} onChange={onChange} className="w-full rounded-lg border px-3 py-2" />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Email</label>
+                  <input type="email" name="email" value={form.email} onChange={onChange} className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500" placeholder="name@example.com" />
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Phone</label>
-                  <input name="phone" value={form.phone} onChange={onChange} className="w-full rounded-lg border px-3 py-2" />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Phone</label>
+                  <input name="phone" value={form.phone} onChange={onChange} className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500" placeholder="+94 7XXXXXXXX" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm mb-1">Address</label>
-                <input name="address" value={form.address} onChange={onChange} className="w-full rounded-lg border px-3 py-2" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Address</label>
+                <input name="address" value={form.address} onChange={onChange} className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500" placeholder="Street, City" />
               </div>
               <div>
-                <label className="block text-sm mb-1">District</label>
-                <select name="district" value={form.district} onChange={onChange} className="w-full rounded-lg border px-3 py-2 bg-white">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">District</label>
+                <select name="district" value={form.district} onChange={onChange} className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100">
                   <option value="" disabled>Select district</option>
                   {SRI_LANKA_DISTRICTS.map((d) => (
                     <option key={d} value={d}>{d}</option>
                   ))}
                 </select>
               </div>
-              {error && <p className="text-red-600 text-sm">{error}</p>}
+              {error && <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>}
               <div className="mt-2 flex justify-end gap-2">
-                <button type="button" onClick={closeModal} className="rounded-lg border px-4 py-2 hover:bg-gray-50">Cancel</button>
-                <button type="submit" className="rounded-lg bg-blue-600 px-4 py-2 text-white font-semibold">{editing ? "Save changes" : "Create client"}</button>
+                <button type="button" onClick={closeModal} className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition">Cancel</button>
+                <button type="submit" className="rounded-lg bg-blue-600 hover:bg-blue-700 px-4 py-2 text-white font-semibold shadow-sm transition">{editing ? "Save changes" : "Create client"}</button>
               </div>
             </form>
           </div>
@@ -422,14 +422,14 @@ function ConfirmDialog({ isOpen, onClose, onConfirm, title, message }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-        <p className="mt-2 text-sm text-gray-600">{message}</p>
+    <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+      <div className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-gray-900 dark:text-slate-100 p-6 shadow-2xl transition-colors">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
+        <p className="mt-2 text-sm text-gray-600 dark:text-slate-400">{message}</p>
         <div className="mt-6 flex gap-3 justify-end">
           <button
             onClick={onClose}
-            className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-50"
+            className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition"
           >
             Cancel
           </button>
@@ -438,7 +438,7 @@ function ConfirmDialog({ isOpen, onClose, onConfirm, title, message }) {
               onConfirm();
               onClose();
             }}
-            className="rounded-lg px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700"
+            className="rounded-lg px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition shadow-sm"
           >
             Delete
           </button>

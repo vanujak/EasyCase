@@ -2,67 +2,71 @@ import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "@clerk/react";
 import AppUserButton from "./AppUserButton.jsx";
+import ThemeToggle from "./ThemeToggle.jsx";
 
 export default function NavbarHome() {
   const [open, setOpen] = useState(false);
   const { isSignedIn } = useAuth();
   
-  const base = "px-3 py-2 rounded-lg font-medium text-lg transition-colors hover:bg-blue-50 hover:text-blue-700";
-  const active = "px-3 py-2 rounded-lg font-semibold text-lg bg-blue-100 text-blue-800";
+  const base = "px-3 py-2 rounded-lg font-medium text-lg transition-colors text-gray-700 hover:bg-blue-50 hover:text-blue-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-400";
+  const active = "px-3 py-2 rounded-lg font-semibold text-lg bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-400";
 
   const cls = ({ isActive }) => (isActive ? active : base);
 
   return (
-    <nav className="border-b bg-white">
+    <nav className="border-b border-gray-200 bg-white dark:bg-slate-900 dark:border-slate-800 text-gray-900 dark:text-slate-100 transition-colors">
       <div className="mx-auto max-w-6xl h-20 px-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <img src="/easy-case-logo.png" alt="EasyCase logo" className="h-15 w-15 object-contain" />
-          <span className="!text-[30px] font-semibold">EasyCase</span>
+          <span className="!text-[30px] font-semibold tracking-tight">EasyCase</span>
         </Link>
 
-        {/* Animated hamburger button */}
-        <button 
-          className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          onClick={() => setOpen(v => !v)} 
-          aria-label="Toggle menu"
-          aria-expanded={open}
-        >
-          <svg className="w-6 h-6 fill-current" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-            <rect 
-              className={`origin-center transition-all duration-300 ease-out ${
-                open 
-                  ? 'translate-y-0 rotate-45' 
-                  : '-translate-y-[5px]'
-              }`}
-              y="7" 
-              width="16" 
-              height="2" 
-              rx="1"
-            />
-            <rect 
-              className={`origin-center transition-all duration-300 ease-out ${
-                open 
-                  ? 'opacity-0 scale-0' 
-                  : 'opacity-100 scale-100'
-              }`}
-              y="7" 
-              width="16" 
-              height="2" 
-              rx="1"
-            />
-            <rect 
-              className={`origin-center transition-all duration-300 ease-out ${
-                open 
-                  ? 'translate-y-0 -rotate-45' 
-                  : 'translate-y-[5px]'
-              }`}
-              y="7" 
-              width="16" 
-              height="2" 
-              rx="1"
-            />
-          </svg>
-        </button>
+        {/* Right side controls (Mobile ThemeToggle + Hamburger) */}
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <button 
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 transition-colors"
+            onClick={() => setOpen(v => !v)} 
+            aria-label="Toggle menu"
+            aria-expanded={open}
+          >
+            <svg className="w-6 h-6 fill-current" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <rect 
+                className={`origin-center transition-all duration-300 ease-out ${
+                  open 
+                    ? 'translate-y-0 rotate-45' 
+                    : '-translate-y-[5px]'
+                }`}
+                y="7" 
+                width="16" 
+                height="2" 
+                rx="1"
+              />
+              <rect 
+                className={`origin-center transition-all duration-300 ease-out ${
+                  open 
+                    ? 'opacity-0 scale-0' 
+                    : 'opacity-100 scale-100'
+                }`}
+                y="7" 
+                width="16" 
+                height="2" 
+                rx="1"
+              />
+              <rect 
+                className={`origin-center transition-all duration-300 ease-out ${
+                  open 
+                    ? 'translate-y-0 -rotate-45' 
+                    : 'translate-y-[5px]'
+                }`}
+                y="7" 
+                width="16" 
+                height="2" 
+                rx="1"
+              />
+            </svg>
+          </button>
+        </div>
 
         {/* Desktop navigation */}
         <div className="hidden md:flex items-center gap-3">
@@ -73,7 +77,7 @@ export default function NavbarHome() {
               <NavLink to="/login" className={cls}>Log in</NavLink>
               <NavLink
                 to="/signup"
-                className="px-4 py-2 rounded-lg font-semibold bg-black text-white hover:bg-gray-800 transition"
+                className="px-4 py-2 rounded-lg font-semibold bg-black text-white hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 transition shadow-sm"
               >
                 Sign up
               </NavLink>
@@ -86,12 +90,16 @@ export default function NavbarHome() {
               </div>
             </>
           )}
+
+          <div className="ml-1 pl-2 border-l border-gray-200 dark:border-slate-800">
+            <ThemeToggle />
+          </div>
         </div>
       </div>
 
       {/* Mobile menu */}
       <div 
-        className={`md:hidden border-t bg-white overflow-hidden transition-all duration-300 ease-in-out ${
+        className={`md:hidden border-t border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden transition-all duration-300 ease-in-out ${
           open ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >

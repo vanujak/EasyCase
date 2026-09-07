@@ -91,22 +91,22 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-colors duration-150">
       <NavbarDashboard />
 
       <div className="mx-auto max-w-6xl px-4 py-8">
         {/* Two-line greeting + date */}
-        <h1 className="text-2xl font-bold leading-tight">
+        <h1 className="text-2xl font-bold leading-tight text-gray-900 dark:text-white">
           {greeting()}
           <br />
-          <span className="text-gray-700">
+          <span className="text-gray-700 dark:text-slate-300">
             Welcome back{userName ? `, ${userName}` : ""}!
           </span>
         </h1>
-        <p className="mt-1 text-gray-600">{new Date().toLocaleDateString()}</p>
+        <p className="mt-1 text-gray-600 dark:text-slate-400">{new Date().toLocaleDateString()}</p>
 
         {err && (
-          <p className="mt-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-red-700">
+          <p className="mt-4 rounded-md border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/40 px-3 py-2 text-red-700 dark:text-red-400">
             {err}
           </p>
         )}
@@ -114,40 +114,40 @@ export default function Dashboard() {
         {/* Tiles */}
         <div className="mt-6 grid gap-6 md:grid-cols-3">
           {/* Active cases */}
-          <div className="rounded-xl border bg-white p-6 shadow-sm">
-            <h3 className="text-lg font-semibold">Active cases</h3>
-            <p className="mt-2 text-4xl font-bold">{activeCases}</p>
+          <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-200">Active cases</h3>
+            <p className="mt-2 text-4xl font-bold text-gray-900 dark:text-white">{activeCases}</p>
           </div>
 
           {/* Upcoming hearings */}
-          <div className="md:col-span-2 rounded-xl border bg-white p-6 shadow-sm">
+          <div className="md:col-span-2 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Upcoming hearings</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-200">Upcoming hearings</h3>
             </div>
 
             {loading ? (
-              <p className="mt-2 text-gray-500">Loading…</p>
+              <p className="mt-2 text-gray-500 dark:text-slate-400">Loading…</p>
             ) : upcomingHearings.length === 0 ? (
-              <p className="mt-2 text-gray-500">No upcoming hearings.</p>
+              <p className="mt-2 text-gray-500 dark:text-slate-400">No upcoming hearings.</p>
             ) : (
               <ul className="mt-3 space-y-2">
                 {upcomingHearings.map((h) => (
                   <li
                     key={h._id}
                     onClick={() => setOpenCaseId(h.caseId)}
-                    className="flex cursor-pointer items-center justify-between rounded-lg border p-3 hover:bg-gray-50"
+                    className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 dark:border-slate-800 p-3 hover:bg-gray-50 dark:hover:bg-slate-800/60 transition-colors"
                     title="Open case details"
                   >
                     <div>
-                      <p className="font-medium">
+                      <p className="font-medium text-gray-900 dark:text-slate-100">
                         {h.caseTitle} (#{h.caseNumber})
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-slate-400">
                         {new Date(h.nextDate).toLocaleString()}
                       </p>
                     </div>
                     {h.outcome && (
-                      <span className="rounded bg-blue-100 px-2 py-1 text-xs text-blue-700">
+                      <span className="rounded bg-blue-100 dark:bg-blue-950/60 px-2 py-1 text-xs text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50">
                         {h.outcome}
                       </span>
                     )}

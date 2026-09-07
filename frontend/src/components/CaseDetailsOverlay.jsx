@@ -52,11 +52,11 @@ export default function CaseDetailOverlay({ caseId, onClose }) {
   
 
   return (
-    <div className="fixed inset-0 z-[1050] bg-black/40 backdrop-blur-sm">
-      <div className="mx-auto flex h-full w-full max-w-6xl flex-col overflow-hidden bg-white shadow-2xl md:rounded-xl md:my-4 md:h-[95vh]">
+    <div className="fixed inset-0 z-[1050] bg-black/60 backdrop-blur-xs">
+      <div className="mx-auto flex h-full w-full max-w-6xl flex-col overflow-hidden bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-gray-900 dark:text-slate-100 shadow-2xl md:rounded-xl md:my-4 md:h-[95vh] transition-colors">
         
         {/* === OPTIMIZED HEADER === */}
-        <div className="sticky top-0 z-10 border-b bg-white px-4 py-3 shadow-sm">
+        <div className="sticky top-0 z-10 border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 shadow-sm transition-colors">
           
           {/* Mobile Layout: Close Top-Right, Title Top-Left, Button Bottom */}
           {/* Desktop Layout: Button Left, Title Center, Close Right */}
@@ -66,18 +66,18 @@ export default function CaseDetailOverlay({ caseId, onClose }) {
             {/* 1. Close Button (Absolute Top Right for Mobile & Desktop) */}
             <button
               onClick={onClose}
-              className="absolute right-0 top-0 -mr-2 -mt-2 p-2 text-gray-500 hover:text-gray-800 md:static md:right-auto md:top-auto md:mr-0 md:mt-0 md:rounded-md md:border md:px-3 md:py-2 md:hover:bg-gray-50 md:order-3 md:ml-auto"
+              className="absolute right-0 top-0 -mr-2 -mt-2 p-2 text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 md:static md:right-auto md:top-auto md:mr-0 md:mt-0 md:rounded-md md:border md:border-gray-200 md:dark:border-slate-700 md:px-3 md:py-2 md:hover:bg-gray-50 md:dark:hover:bg-slate-800 md:order-3 md:ml-auto transition"
             >
               ✕
             </button>
 
             {/* 2. Case Info (Title) */}
             <div className="mb-3 mr-8 flex flex-col md:mb-0 md:mr-0 md:items-center md:order-2 md:flex-1 md:px-4">
-                <h2 className="text-lg font-bold leading-tight md:text-xl">
+                <h2 className="text-lg font-bold leading-tight text-gray-900 dark:text-white md:text-xl">
                   {loading ? "Loading…" : caseDoc?.title}
                 </h2>
                 {!loading && caseDoc && (
-                  <p className="text-xs text-gray-500 md:text-sm">
+                  <p className="text-xs text-gray-500 dark:text-slate-400 md:text-sm">
                     {caseDoc.clientName ? `${caseDoc.clientName} • ` : ""}
                     {caseDoc.courtType}
                     {caseDoc.courtPlace ? ` — ${caseDoc.courtPlace}` : ""}
@@ -93,8 +93,8 @@ export default function CaseDetailOverlay({ caseId, onClose }) {
                   onClick={() => setOpenHearing(true)}
                   className={`w-full rounded-lg px-4 py-2 text-sm font-semibold shadow-sm md:w-auto ${
                     isClosed
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "bg-blue-600 text-white hover:bg-blue-700 active:scale-95 transition-transform"
+                      ? "bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-slate-500 cursor-not-allowed"
+                      : "bg-blue-600 text-white hover:bg-blue-700 active:scale-95 transition"
                   }`}
                 >
                   + Add hearing
@@ -105,26 +105,26 @@ export default function CaseDetailOverlay({ caseId, onClose }) {
         </div>
 
         {/* Body */}
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-8 bg-gray-50/50">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-8 bg-gray-50/50 dark:bg-slate-950/50 transition-colors">
           {/* Conditional Badge: Show "Case Closed" if closed, otherwise show next hearing */}
           {!loading && (
             <div className="mt-6 flex justify-center">
               {isClosed ? (
-                <div className="rounded-full border border-red-200 bg-red-50 px-4 py-1 text-sm font-medium text-red-800 shadow-sm ring-4 ring-red-50">
+                <div className="rounded-full border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/40 px-4 py-1 text-sm font-medium text-red-800 dark:text-red-400 shadow-sm ring-4 ring-red-50 dark:ring-red-950/20">
                   <span className="font-bold">Case Closed</span>
                 </div>
               ) : nextHearingLabel ? (
-                <div className="rounded-full border bg-white px-4 py-1 text-sm font-medium text-blue-800 shadow-sm ring-4 ring-blue-50">
+                <div className="rounded-full border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-1 text-sm font-medium text-blue-800 dark:text-blue-400 shadow-sm ring-4 ring-blue-50 dark:ring-blue-950/30">
                   Next hearing: <span className="font-bold">{nextHearingLabel}</span>
                 </div>
               ) : null}
             </div>
           )}
 
-          {error && <p className="mt-4 text-center text-red-600">{error}</p>}
+          {error && <p className="mt-4 text-center text-red-600 dark:text-red-400">{error}</p>}
           
           {loading ? (
-            <div className="mt-10 text-center text-gray-500">Loading timeline…</div>
+            <div className="mt-10 text-center text-gray-500 dark:text-slate-400">Loading timeline…</div>
           ) : (
             <Timeline startedAt={caseDoc.createdAt} hearings={hearings} />
           )}
@@ -206,7 +206,7 @@ function Timeline({ startedAt, hearings }) {
     <section className="relative mx-auto mt-8 max-w-5xl" ref={wrapRef}>
       <ul className="relative grid grid-cols-[1fr_30px_1fr] md:grid-cols-[1fr_40px_1fr] gap-x-2 md:gap-x-6">
         <div
-          className="absolute left-1/2 w-0.5 -translate-x-1/2 bg-gray-300"
+          className="absolute left-1/2 w-0.5 -translate-x-1/2 bg-gray-300 dark:bg-slate-700"
           style={{ top: `${linePos.top}px`, bottom: `${linePos.bottom}px` }}
         />
         {items.map((it) => (
@@ -220,13 +220,13 @@ function Timeline({ startedAt, hearings }) {
 
 function TimelineRow({ item }) {
   const card = (
-    <div className="rounded-xl border bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
+    <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm hover:shadow-md transition">
       {item.subtitle && (
-        <div className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">{item.subtitle}</div>
+        <div className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-slate-500 mb-1">{item.subtitle}</div>
       )}
-      <h3 className="text-base font-bold text-gray-900">{item.title}</h3>
-      {item.body && <p className="mt-2 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{item.body}</p>}
-      {item.footer && <div className="mt-3 border-t pt-2 text-xs font-medium text-gray-500">{item.footer}</div>}
+      <h3 className="text-base font-bold text-gray-900 dark:text-white">{item.title}</h3>
+      {item.body && <p className="mt-2 text-sm text-gray-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">{item.body}</p>}
+      {item.footer && <div className="mt-3 border-t border-gray-100 dark:border-slate-800 pt-2 text-xs font-medium text-gray-500 dark:text-slate-400">{item.footer}</div>}
     </div>
   );
 
@@ -238,7 +238,7 @@ function TimelineRow({ item }) {
       <div className="relative col-start-2 mb-8 md:mb-12 flex items-start pt-6 justify-center">
         <span
           data-dot="1"
-          className="block h-3 w-3 rounded-full bg-gray-800 ring-4 ring-white"
+          className="block h-3 w-3 rounded-full bg-gray-800 dark:bg-blue-500 ring-4 ring-white dark:ring-slate-900"
         />
       </div>
       <div className="col-start-3 mb-8 md:mb-12">
@@ -316,23 +316,23 @@ function HearingModal({ caseId, onClose, onSaved }) {
 
   return (
     // Z-Index 1060 to stay above the details overlay
-    <div className="fixed inset-0 z-[1060] grid place-items-center bg-black/50 p-0 md:p-4">
+    <div className="fixed inset-0 z-[1060] grid place-items-center bg-black/60 backdrop-blur-xs p-0 md:p-4">
       
       {/* Mobile Optimized Container */}
-      <div className="relative w-[95%] max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-black/5">
+      <div className="relative w-[95%] max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-gray-900 dark:text-slate-100 p-6 shadow-2xl transition-colors">
         
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900">Add hearing</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Add hearing</h2>
           <button
             onClick={onClose}
-            className="rounded-full bg-gray-100 p-2 text-gray-500 hover:bg-gray-200"
+            className="rounded-full bg-gray-100 dark:bg-slate-800 p-2 text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-700 transition"
           >
             ✕
           </button>
         </div>
 
         {err && (
-          <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 border border-red-100">
+          <div className="mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-400 border border-red-200 dark:border-red-900/50">
             {err}
           </div>
         )}
@@ -340,7 +340,7 @@ function HearingModal({ caseId, onClose, onSaved }) {
         <form onSubmit={submit} className="grid gap-5">
           {/* Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Date <span className="text-red-600">*</span>
             </label>
             <input
@@ -349,14 +349,14 @@ function HearingModal({ caseId, onClose, onSaved }) {
               value={form.date}
               onChange={onChange}
               required
-              className="w-full rounded-lg border-gray-300 border px-3 py-2.5 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="w-full rounded-lg border-gray-300 dark:border-slate-700 border bg-white dark:bg-slate-800 px-3 py-2.5 text-gray-900 dark:text-slate-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Notes <span className="text-gray-400 font-normal text-xs">(optional)</span>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+              Notes <span className="text-gray-400 dark:text-slate-500 font-normal text-xs">(optional)</span>
             </label>
             <textarea
               name="notes"
@@ -364,16 +364,16 @@ function HearingModal({ caseId, onClose, onSaved }) {
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value.slice(0, notesMax) }))}
               rows={3}
               placeholder="Summary of the hearing..."
-              className="w-full rounded-lg border-gray-300 border px-3 py-2.5 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="w-full rounded-lg border-gray-300 dark:border-slate-700 border bg-white dark:bg-slate-800 px-3 py-2.5 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
-            <div className="mt-1 text-right text-xs text-gray-400">
+            <div className="mt-1 text-right text-xs text-gray-400 dark:text-slate-500">
               {form.notes.length}/{notesMax}
             </div>
           </div>
 
           {/* Outcome */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Outcome <span className="text-red-600">*</span>
             </label>
             <select
@@ -381,7 +381,7 @@ function HearingModal({ caseId, onClose, onSaved }) {
               value={form.outcome}
               onChange={onChange}
               required
-              className="w-full rounded-lg border-gray-300 border px-3 py-2.5 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="w-full rounded-lg border-gray-300 dark:border-slate-700 border px-3 py-2.5 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
               {OUTCOMES.map((o) => (
                 <option key={o} value={o}>{o}</option>
@@ -391,7 +391,7 @@ function HearingModal({ caseId, onClose, onSaved }) {
 
           {/* Next Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Next hearing date <span className="text-red-600">*</span>
             </label>
             <input
@@ -400,7 +400,7 @@ function HearingModal({ caseId, onClose, onSaved }) {
               value={form.nextDate}
               onChange={onChange}
               required
-              className="w-full rounded-lg border-gray-300 border px-3 py-2.5 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="w-full rounded-lg border-gray-300 dark:border-slate-700 border bg-white dark:bg-slate-800 px-3 py-2.5 text-gray-900 dark:text-slate-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
 
@@ -409,14 +409,14 @@ function HearingModal({ caseId, onClose, onSaved }) {
               type="button"
               onClick={onClose}
               disabled={saving}
-              className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="flex-1 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-70"
+              className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-70 transition shadow-sm"
             >
               {saving ? "Saving..." : "Save Hearing"}
             </button>

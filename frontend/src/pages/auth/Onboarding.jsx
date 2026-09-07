@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser, useAuth } from "@clerk/react";
 import AppUserButton from "../../components/AppUserButton.jsx";
+import ThemeToggle from "../../components/ThemeToggle.jsx";
 import { apiFetch } from "../../lib/api.js";
 import { useLawyerProfile } from "../../context/AuthContext.jsx";
 
@@ -84,7 +85,7 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-150">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-between items-center px-4">
           <div className="flex items-center gap-2">
@@ -93,23 +94,26 @@ export default function Onboarding() {
               alt="EasyCase logo"
               className="h-12 w-12 object-contain"
             />
-            <span className="text-2xl font-bold text-gray-900">EasyCase</span>
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">EasyCase</span>
           </div>
-          <AppUserButton afterSignOutUrl="/login" />
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <AppUserButton afterSignOutUrl="/login" />
+          </div>
         </div>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-lg">
-        <div className="bg-white py-8 px-6 shadow-md rounded-2xl sm:px-10 border border-gray-100">
+        <div className="bg-white dark:bg-slate-900 py-8 px-6 shadow-xl rounded-2xl sm:px-10 border border-gray-100 dark:border-slate-800 transition-colors">
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Complete Lawyer Profile</h1>
-            <p className="mt-1 text-sm text-gray-600">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Complete Lawyer Profile</h1>
+            <p className="mt-1 text-sm text-gray-600 dark:text-slate-400">
               Please provide your professional credentials to activate your EasyCase workspace.
             </p>
           </div>
 
           {error && (
-            <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 border border-red-200">
+            <div className="mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-400 border border-red-200 dark:border-red-900/50">
               {error}
             </div>
           )}
@@ -117,7 +121,7 @@ export default function Onboarding() {
           <form className="space-y-4" onSubmit={onSubmit}>
             {/* Full Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 Full Name
               </label>
               <input
@@ -125,14 +129,14 @@ export default function Onboarding() {
                 value={form.name}
                 onChange={onChange}
                 placeholder="e.g., Vanuja Karunaratne"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
 
             {/* Email (Read-only from Clerk) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 Email
               </label>
               <input
@@ -140,13 +144,13 @@ export default function Onboarding() {
                 name="email"
                 value={form.email}
                 disabled
-                className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2 text-sm text-gray-600 cursor-not-allowed"
+                className="w-full rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-800/50 px-4 py-2 text-sm text-gray-600 dark:text-slate-400 cursor-not-allowed"
               />
             </div>
 
             {/* Mobile (Sri Lanka) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 Mobile (Sri Lanka)
               </label>
               <input
@@ -157,17 +161,17 @@ export default function Onboarding() {
                 inputMode="tel"
                 pattern="^(?:\+94|0)7(?:0|1|2|5|6|7|8)\d{7}$"
                 title="Use 07XXXXXXXX or +947XXXXXXXX"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">
                 Accepted formats: <code>07XXXXXXXX</code> or <code>+947XXXXXXXX</code>
               </p>
             </div>
 
             {/* Date of birth */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 Date of Birth
               </label>
               <input
@@ -175,21 +179,21 @@ export default function Onboarding() {
                 name="dob"
                 value={form.dob}
                 onChange={onChange}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
 
             {/* Gender */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 Gender
               </label>
               <select
                 name="gender"
                 value={form.gender}
                 onChange={onChange}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-slate-700 px-4 py-2 text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
                 <option value="" disabled>Select gender</option>
@@ -200,7 +204,7 @@ export default function Onboarding() {
 
             {/* BAR Association Reg No */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 BAR Association Reg. No.
               </label>
               <input
@@ -208,7 +212,7 @@ export default function Onboarding() {
                 value={form.barRegNo}
                 onChange={onChange}
                 placeholder="e.g., BASL/12345"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -218,7 +222,7 @@ export default function Onboarding() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 px-4 rounded-lg bg-black text-white font-medium hover:bg-gray-800 transition disabled:opacity-50"
+                className="w-full py-2.5 px-4 rounded-lg bg-black hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-medium transition-colors shadow-sm disabled:opacity-50"
               >
                 {loading ? "Saving Profile..." : "Complete Setup"}
               </button>

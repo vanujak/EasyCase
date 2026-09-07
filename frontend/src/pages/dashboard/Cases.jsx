@@ -126,27 +126,27 @@ export default function Cases() {
 
   // ---------- UI ----------
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100 transition-colors duration-150">
       <NavbarDashboard />
 
       <div className="mx-auto max-w-6xl px-4 py-8">
 
         {/* === STICKY HEADER SECTION === */}
-        <div className="sticky top-0 z-40 bg-gray-50 pb-4 border-b border-gray-50">
+        <div className="sticky top-0 z-40 bg-gray-50 dark:bg-slate-950 pb-4 border-b border-gray-200 dark:border-slate-800 transition-colors">
           
           {/* 1. Title + New Case Button */}
           <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-            <h1 className="text-2xl font-bold">Cases</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Cases</h1>
             <button
               onClick={() => setOpenCaseModal(true)}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-white font-semibold shadow hover:bg-blue-700"
+              className="rounded-lg bg-blue-600 px-4 py-2 text-white font-semibold shadow hover:bg-blue-700 transition"
             >
               + New case
             </button>
           </div>
 
           {/* 2. Search Bar with Reset Button */}
-          <div className="mt-4 bg-white rounded-xl border p-4 shadow-sm">
+          <div className="mt-4 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-4 shadow-sm">
             <form
               onSubmit={(e) => { e.preventDefault(); fetchCases(q.trim()); }}
               className="flex flex-col sm:flex-row gap-2"
@@ -155,18 +155,18 @@ export default function Cases() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search by title or case number..."
-                className="flex-1 rounded-lg border px-3 py-2"
+                className="flex-1 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button 
                 type="submit"
-                className="rounded-lg bg-black px-4 py-2 text-white font-semibold whitespace-nowrap"
+                className="rounded-lg bg-black hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 py-2 text-white font-semibold whitespace-nowrap transition shadow-sm"
               >
                 Search
               </button>
               <button 
                 type="button"
                 onClick={resetFilters}
-                className="rounded-lg border px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap"
+                className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 whitespace-nowrap transition"
               >
                 Reset filters
               </button>
@@ -174,7 +174,7 @@ export default function Cases() {
           </div>
         </div>
 
-        {error && <p className="mt-4 text-red-600">{error}</p>}
+        {error && <p className="mt-4 text-red-600 dark:text-red-400">{error}</p>}
 
         {/* ------------------ LIST SECTION ------------------ */}
         <div className="mt-4 relative z-0">
@@ -182,48 +182,50 @@ export default function Cases() {
           {/* === MOBILE CARD VIEW (Visible only on small screens) === */}
           <div className="space-y-3 md:hidden">
             {loading ? (
-              <p className="text-gray-500 text-center py-6">Loading…</p>
+              <p className="text-gray-500 dark:text-slate-400 text-center py-6">Loading…</p>
             ) : cases.length === 0 ? (
-              <p className="text-gray-500 text-center py-6">No cases found.</p>
+              <p className="text-gray-500 dark:text-slate-400 text-center py-6">No cases found.</p>
             ) : (
               cases.map((c) => (
                 <div 
                   key={c._id} 
                   onClick={() => setOpenCaseId(c._id)}
-                  className="rounded-xl border bg-white p-4 shadow-sm active:bg-gray-50 transition-colors"
+                  className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm active:bg-gray-50 dark:active:bg-slate-800/60 transition-colors"
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                        <span className="inline-block rounded bg-gray-100 px-2 py-1 text-xs font-bold text-gray-600 mb-1">
+                        <span className="inline-block rounded bg-gray-100 dark:bg-slate-800 px-2 py-1 text-xs font-bold text-gray-600 dark:text-slate-300 mb-1">
                           #{c.number}
                         </span>
-                        <h3 className="font-semibold text-lg leading-tight">{c.title}</h3>
+                        <h3 className="font-semibold text-lg leading-tight text-gray-900 dark:text-white">{c.title}</h3>
                     </div>
                     <span className={`px-2 py-1 rounded text-xs font-medium capitalize ${
-                      c.status === 'closed' ? 'bg-gray-100 text-gray-600' : 'bg-green-100 text-green-700'
+                      c.status === 'closed'
+                        ? 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300'
+                        : 'bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-900/50'
                     }`}>
                       {c.status}
                     </span>
                   </div>
 
-                  <div className="mt-3 text-sm text-gray-600 space-y-1">
-                    <p><span className="font-medium text-gray-900">Client:</span> {c.clientName || "—"}</p>
-                    <p><span className="font-medium text-gray-900">Court:</span> {c.courtType} {c.courtPlace ? `(${c.courtPlace})` : ""}</p>
-                    <p><span className="font-medium text-gray-900">Date:</span> {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}</p>
+                  <div className="mt-3 text-sm text-gray-600 dark:text-slate-400 space-y-1">
+                    <p><span className="font-medium text-gray-900 dark:text-slate-200">Client:</span> {c.clientName || "—"}</p>
+                    <p><span className="font-medium text-gray-900 dark:text-slate-200">Court:</span> {c.courtType} {c.courtPlace ? `(${c.courtPlace})` : ""}</p>
+                    <p><span className="font-medium text-gray-900 dark:text-slate-200">Date:</span> {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}</p>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="mt-4 flex gap-2 pt-3 border-t">
+                  <div className="mt-4 flex gap-2 pt-3 border-t border-gray-200 dark:border-slate-800">
                     <button
                       onClick={(e) => { e.stopPropagation(); closeCase(c._id); }}
                       disabled={c.status === "closed"}
-                      className="flex-1 rounded-lg border px-3 py-2 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                     >
                       {c.status === "closed" ? "Closed" : "Close"}
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); deleteCase(c._id); }}
-                      className="flex-1 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100"
+                      className="flex-1 rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 transition"
                     >
                       Delete
                     </button>
@@ -234,9 +236,9 @@ export default function Cases() {
           </div>
 
           {/* === DESKTOP TABLE VIEW (Hidden on mobile) === */}
-          <div className="hidden md:block overflow-hidden rounded-xl border bg-white shadow-sm">
+          <div className="hidden md:block overflow-hidden rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
             <table className="min-w-full text-sm">
-              <thead className="bg-gray-100 text-left">
+              <thead className="bg-gray-100 dark:bg-slate-800/80 text-gray-700 dark:text-slate-300 text-left">
                 <tr>
                   <th className="px-4 py-3">#</th>
                   <th className="px-4 py-3">Title</th>
@@ -250,36 +252,38 @@ export default function Cases() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td className="px-4 py-6" colSpan={8}>Loading…</td></tr>
+                  <tr><td className="px-4 py-6 text-gray-500 dark:text-slate-400" colSpan={8}>Loading…</td></tr>
                 ) : cases.length === 0 ? (
-                  <tr><td className="px-4 py-10 text-center text-gray-500" colSpan={8}>No cases yet.</td></tr>
+                  <tr><td className="px-4 py-10 text-center text-gray-500 dark:text-slate-400" colSpan={8}>No cases yet.</td></tr>
                 ) : (
                   cases.map((c) => (
                     <tr
                       key={c._id}
-                      className="border-t hover:bg-gray-50 cursor-pointer"
+                      className="border-t border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
                       onClick={() => setOpenCaseId(c._id)}
                     >
-                      <td className="px-4 py-3 text-gray-600">#{c.number}</td> 
-                      <td className="px-4 py-3 font-medium">{c.title}</td>
-                      <td className="px-4 py-3">{c.clientName || "—"}</td>
-                      <td className="px-4 py-3">{c.courtType}</td>
-                      <td className="px-4 py-3">{c.courtPlace || "—"}</td>
+                      <td className="px-4 py-3 text-gray-600 dark:text-slate-400">#{c.number}</td> 
+                      <td className="px-4 py-3 font-medium text-gray-900 dark:text-slate-100">{c.title}</td>
+                      <td className="px-4 py-3 text-gray-700 dark:text-slate-300">{c.clientName || "—"}</td>
+                      <td className="px-4 py-3 text-gray-700 dark:text-slate-300">{c.courtType}</td>
+                      <td className="px-4 py-3 text-gray-700 dark:text-slate-300">{c.courtPlace || "—"}</td>
                       <td className="px-4 py-3 capitalize">
                          <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                            c.status === 'closed' ? 'bg-gray-100 text-gray-600' : 'bg-green-100 text-green-700'
+                            c.status === 'closed'
+                              ? 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300'
+                              : 'bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-900/50'
                          }`}>
                             {c.status}
                          </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 text-gray-600 dark:text-slate-400">
                         {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex gap-2">
                           <button
                             onClick={(e) => { e.stopPropagation(); closeCase(c._id); }}
-                            className="rounded-lg border px-3 py-1 text-sm hover:bg-gray-50 disabled:opacity-50"
+                            className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1 text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 transition"
                             disabled={c.status === "closed"}
                             title={c.status === "closed" ? "Already closed" : "Close case"}
                           >
@@ -287,7 +291,7 @@ export default function Cases() {
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); deleteCase(c._id); }}
-                            className="rounded-lg border border-red-300 px-3 py-1 text-sm text-red-600 hover:bg-red-50"
+                            className="rounded-lg border border-red-300 dark:border-red-900/50 bg-white dark:bg-slate-800 px-3 py-1 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
                           >
                             Delete
                           </button>
@@ -492,12 +496,12 @@ function CaseModal({ onClose, onSaved }) {
 
   // IMPORTANT: z-[1000] keeps it above the sticky header
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 p-4 overflow-y-auto">
-      <div className="w-full max-w-2xl my-8 rounded-2xl bg-white shadow-xl flex flex-col max-h-[calc(100vh-4rem)]">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
+      <div className="w-full max-w-2xl my-8 rounded-2xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-gray-900 dark:text-slate-100 shadow-2xl flex flex-col max-h-[calc(100vh-4rem)]">
         {/* Sticky Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b bg-white rounded-t-2xl flex-shrink-0">
-          <h2 className="text-xl font-semibold">New case</h2>
-          <button onClick={onClose} className="rounded-md p-1 hover:bg-gray-100">✕</button>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-t-2xl flex-shrink-0">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">New case</h2>
+          <button onClick={onClose} className="rounded-md p-1 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-slate-400 transition">✕</button>
         </div>
 
         {/* Scrollable Content */}
@@ -507,20 +511,20 @@ function CaseModal({ onClose, onSaved }) {
             {/* Title + Case number */}
             <div className="grid md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm mb-1">Title</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Title</label>
                 <input
                   name="title"
                   value={form.title}
                   onChange={onChange}
                   required
-                  className="w-full rounded-lg border px-3 py-2"
+                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Case number</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Case number</label>
                 <input value={`#${nextNumber || "…"}`} readOnly
-                  className="w-full rounded-lg border px-3 py-2 bg-gray-100" />
-                <p className="mt-1 text-xs text-gray-500">
+                  className="w-full rounded-lg border border-gray-200 dark:border-slate-700 px-3 py-2 bg-gray-100 dark:bg-slate-800/60 text-gray-600 dark:text-slate-400 cursor-not-allowed" />
+                <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">
                   Assigned automatically.
                 </p>
               </div>
@@ -528,24 +532,24 @@ function CaseModal({ onClose, onSaved }) {
 
             {/* Type of case */}
             <div>
-              <label className="block text-sm mb-1">Type of case</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Type of case</label>
               <input
                 name="type"
                 value={form.type}
                 onChange={onChange}
                 placeholder="e.g., Property dispute"
-                className="w-full rounded-lg border px-3 py-2"
+                className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             {/* Client section */}
-            <div className="rounded-lg border p-3">
+            <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/30 p-3">
               <div className="flex items-center justify-between">
-                <label className="block text-sm font-medium">Client</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">Client</label>
                 <button
                   type="button"
                   onClick={() => setAddClient(v => !v)}
-                  className="text-sm underline"
+                  className="text-sm underline text-blue-600 dark:text-blue-400 font-medium"
                 >
                   {addClient ? "Pick existing instead" : "Add new client here"}
                 </button>
@@ -559,27 +563,25 @@ function CaseModal({ onClose, onSaved }) {
                     onChange={(e) => {
                       const newQuery = e.target.value;
                       setClientQuery(newQuery);
-                      // If user clears or changes the input, reset the selected client
                       if (newQuery !== clientQuery) {
                         setForm((f) => ({ ...f, clientId: "" }));
                       }
                     }}
                     placeholder="Search client by name…"
-                    className={`w-full rounded-lg border px-3 py-2 ${
+                    className={`w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       error && !form.clientId ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                     }`}
                   />
-                  {searching && <p className="text-xs mt-1 text-gray-500">Searching…</p>}
+                  {searching && <p className="text-xs mt-1 text-gray-500 dark:text-slate-400">Searching…</p>}
                   
-                  {/* Error message when no client selected on submit */}
                   {error && !form.clientId && (
-                    <p className="mt-2 text-sm text-red-600">
+                    <p className="mt-2 text-sm text-red-600 dark:text-red-400">
                       {error}
                     </p>
                   )}
                   
                   {clientResults.length > 0 && (
-                    <div className="mt-2 max-h-40 overflow-auto rounded-lg border">
+                    <div className="mt-2 max-h-40 overflow-auto rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-md">
                       {clientResults.map((c) => (
                         <button
                           type="button"
@@ -587,15 +589,15 @@ function CaseModal({ onClose, onSaved }) {
                           onClick={() => {
                             setForm((f) => ({ ...f, clientId: c._id }));
                             setClientQuery(c.name);
-                            setClientResults([]); // Clear results immediately
-                            setSearching(false); // Stop any pending search
-                            setError(""); // Clear any errors
+                            setClientResults([]);
+                            setSearching(false);
+                            setError("");
                           }}
-                          className={`block w-full text-left px-3 py-2 hover:bg-gray-50 ${
-                            form.clientId === c._id ? "bg-blue-50" : ""
+                          className={`block w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 transition ${
+                            form.clientId === c._id ? "bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400" : "text-gray-900 dark:text-slate-100"
                           }`}
                         >
-                          {c.name} <span className="text-gray-500 text-xs">
+                          {c.name} <span className="text-gray-500 dark:text-slate-400 text-xs">
                             ({c.email || "no email"})
                           </span>
                         </button>
@@ -603,14 +605,13 @@ function CaseModal({ onClose, onSaved }) {
                     </div>
                   )}
                   
-                  {/* Show message when search returns no results */}
                   {!searching && clientQuery.trim() && clientResults.length === 0 && !form.clientId && (
-                    <p className="mt-2 text-xs text-gray-500">
+                    <p className="mt-2 text-xs text-gray-500 dark:text-slate-400">
                       No clients found. Try a different name or{" "}
                       <button
                         type="button"
                         onClick={() => setAddClient(true)}
-                        className="text-blue-600 underline"
+                        className="text-blue-600 dark:text-blue-400 underline"
                       >
                         add a new client
                       </button>
@@ -623,11 +624,11 @@ function CaseModal({ onClose, onSaved }) {
                 <div className="mt-2 grid gap-3">
                   <div className="grid md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm mb-1">Type</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Type</label>
                       <select
                         value={newClient.type}
                         onChange={(e) => setNewClient(v => ({ ...v, type: e.target.value }))}
-                        className="w-full rounded-lg border px-3 py-2 bg-white"
+                        className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100"
                         required
                       >
                         {CLIENT_TYPES.map(t => (
@@ -638,12 +639,12 @@ function CaseModal({ onClose, onSaved }) {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm mb-1">Name</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Name</label>
                       <input
-                        placeholder="Full name / Organization"
                         value={newClient.name}
                         onChange={(e) => setNewClient(v => ({ ...v, name: e.target.value }))}
-                        className="w-full rounded-lg border px-3 py-2"
+                        className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
+                        placeholder="Client's full name"
                         required
                       />
                     </div>
@@ -651,89 +652,109 @@ function CaseModal({ onClose, onSaved }) {
 
                   <div className="grid md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm mb-1">Email</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Email (optional)</label>
                       <input
                         type="email"
-                        placeholder="you@example.com"
                         value={newClient.email}
                         onChange={(e) => setNewClient(v => ({ ...v, email: e.target.value }))}
-                        className="w-full rounded-lg border px-3 py-2"
+                        className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
+                        placeholder="name@example.com"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm mb-1">Phone</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Phone</label>
                       <input
-                        placeholder="+9477xxxxxxx"
                         value={newClient.phone}
                         onChange={(e) => setNewClient(v => ({ ...v, phone: e.target.value }))}
-                        className="w-full rounded-lg border px-3 py-2"
+                        className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
+                        placeholder="07XXXXXXXX or +947XXXXXXXX"
+                        inputMode="tel"
+                        pattern="^(?:\+94|0)7(?:0|1|2|5|6|7|8)\d{7}$"
+                        title="Use 07XXXXXXXX or +947XXXXXXXX"
+                        required
                       />
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm mb-1">Address</label>
-                    <input
-                      placeholder="Street, city"
-                      value={newClient.address}
-                      onChange={(e) => setNewClient(v => ({ ...v, address: e.target.value }))}
-                      className="w-full rounded-lg border px-3 py-2"
-                    />
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">District</label>
+                      <select
+                        value={newClient.district}
+                        onChange={(e) => setNewClient(v => ({ ...v, district: e.target.value }))}
+                        className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100"
+                        required
+                      >
+                        <option value="" disabled>Select district</option>
+                        {SRI_LANKA_DISTRICTS?.map(d => <option key={d} value={d}>{d}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Address</label>
+                      <input
+                        value={newClient.address}
+                        onChange={(e) => setNewClient(v => ({ ...v, address: e.target.value }))}
+                        className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
+                        placeholder="Street, City"
+                        required
+                      />
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm mb-1">District</label>
-                    <select
-                      value={newClient.district}
-                      onChange={(e) => setNewClient(v => ({ ...v, district: e.target.value }))}
-                      className="w-full rounded-lg border px-3 py-2 bg-white"
-                      required
+                  <div className="flex justify-end gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setAddClient(false)}
+                      className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition"
                     >
-                      <option value="" disabled>Select district</option>
-                      {SRI_LANKA_DISTRICTS?.map(d => (
-                        <option key={d} value={d}>{d}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="mt-1">
+                      Cancel
+                    </button>
                     <button
                       type="button"
                       onClick={createClientInline}
-                      className="w-full md:w-auto rounded-lg bg-blue-600 px-4 py-2 text-white font-semibold"
+                      className="rounded-lg bg-black hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-3 py-1.5 text-sm text-white font-medium transition"
                     >
-                      Save client
+                      Save & Select
                     </button>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Court / Place */}
+            {/* Court type & place */}
             <div className="grid md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm mb-1">Court</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Court</label>
                 <select
                   name="courtType"
                   value={form.courtType}
                   onChange={onChange}
-                  className="w-full rounded-lg border px-3 py-2 bg-white"
-                  required
+                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100"
                 >
-                  {COURT_TYPES?.map(t => <option key={t} value={t}>{t}</option>)}
+                  {COURT_TYPES?.map((ct) => (
+                    <option key={ct} value={ct}>{ct}</option>
+                  ))}
                 </select>
               </div>
+
               <div>
-                <label className="block text-sm mb-1">Place</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                  Court Location {fixedColombo ? "(Fixed)" : ""}
+                </label>
+
                 {fixedColombo ? (
-                  <input value="Colombo" readOnly className="w-full rounded-lg border px-3 py-2 bg-gray-100" />
+                  <input
+                    value="Colombo"
+                    readOnly
+                    className="w-full rounded-lg border border-gray-200 dark:border-slate-700 px-3 py-2 bg-gray-100 dark:bg-slate-800/60 text-gray-600 dark:text-slate-400 cursor-not-allowed"
+                  />
                 ) : canPickDistrict ? (
                   <select
                     name="courtPlace"
                     value={form.courtPlace}
                     onChange={onChange}
                     required
-                    className="w-full rounded-lg border px-3 py-2 bg-white"
+                    className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100"
                   >
                     <option value="" disabled>Select district</option>
                     {SRI_LANKA_DISTRICTS?.map(d => <option key={d} value={d}>{d}</option>)}
@@ -744,39 +765,39 @@ function CaseModal({ onClose, onSaved }) {
                     value={form.courtPlace}
                     onChange={onChange}
                     required
-                    className="w-full rounded-lg border px-3 py-2 bg-white"
+                    className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-gray-900 dark:text-slate-100"
                   >
                     <option value="" disabled>Select province</option>
                     {SRI_LANKA_PROVINCES?.map(p => <option key={p} value={p}>{p}</option>)}
                   </select>
                 ) : (
-                  <input readOnly className="w-full rounded-lg border px-3 py-2 bg-gray-100" />
+                  <input readOnly className="w-full rounded-lg border border-gray-200 dark:border-slate-700 px-3 py-2 bg-gray-100 dark:bg-slate-800/60 text-gray-600 dark:text-slate-400 cursor-not-allowed" />
                 )}
               </div>
             </div>
 
             {/* Status (display only) */}
             <div>
-              <label className="block text-sm mb-1">Status</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Status</label>
               <input
                 value="open"
                 readOnly
-                className="w-full rounded-lg border px-3 py-2 bg-gray-100 lowercase"
+                className="w-full rounded-lg border border-gray-200 dark:border-slate-700 px-3 py-2 bg-gray-100 dark:bg-slate-800/60 text-gray-600 dark:text-slate-400 cursor-not-allowed lowercase"
                 style={{ textTransform: "capitalize" }}
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">
                 Cases always start as open. You can close the case from the table.
               </p>
             </div>
 
             {/* Footer buttons - inside the form, scrolls with content */}
-            <div className="pt-4 border-t flex justify-end gap-2">
+            <div className="pt-4 border-t border-gray-200 dark:border-slate-800 flex justify-end gap-2">
               <button type="button" onClick={onClose}
-                      className="rounded-lg border px-4 py-2 hover:bg-gray-50">
+                      className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition">
                 Cancel
               </button>
               <button type="submit"
-                      className="rounded-lg bg-blue-600 px-4 py-2 text-white font-semibold">
+                      className="rounded-lg bg-blue-600 hover:bg-blue-700 px-4 py-2 text-white font-semibold transition shadow-sm">
                 Create case
               </button>
             </div>
@@ -792,14 +813,14 @@ function ConfirmDialog({ isOpen, onClose, onConfirm, title, message, confirmText
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-        <p className="mt-2 text-sm text-gray-600">{message}</p>
+    <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+      <div className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 p-6 shadow-2xl transition-colors">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
+        <p className="mt-2 text-sm text-gray-600 dark:text-slate-400">{message}</p>
         <div className="mt-6 flex gap-3 justify-end">
           <button
             onClick={onClose}
-            className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-50"
+            className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition"
           >
             {cancelText}
           </button>
@@ -808,7 +829,7 @@ function ConfirmDialog({ isOpen, onClose, onConfirm, title, message, confirmText
               onConfirm();
               onClose();
             }}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold text-white ${
+            className={`rounded-lg px-4 py-2 text-sm font-semibold text-white transition shadow-sm ${
               variant === "danger"
                 ? "bg-red-600 hover:bg-red-700"
                 : "bg-blue-600 hover:bg-blue-700"
