@@ -4,8 +4,8 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "dev": "doppler run -- nodemon src/server.js",
+    "start": "doppler run -- node src/server.js"
   },
   "license": "ISC",
   "dependencies": {
