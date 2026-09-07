@@ -5,7 +5,8 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "doppler run -- nodemon src/server.js",
-    "start": "doppler run -- node src/server.js"
+    "start": "node src/server.js",
+    "start:doppler": "doppler run -- node src/server.js"
   },
   "license": "ISC",
   "dependencies": {
