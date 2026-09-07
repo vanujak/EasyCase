@@ -1,6 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { UserButton, useClerk } from "@clerk/react";
+import { useClerk } from "@clerk/react";
+import AppUserButton from "./AppUserButton.jsx";
 
 export default function NavbarDashboard() {
   const [open, setOpen] = useState(false);
@@ -88,7 +89,7 @@ export default function NavbarDashboard() {
           </NavLink>
 
           <div className="ml-2">
-            <UserButton afterSignOutUrl="/login" />
+            <AppUserButton afterSignOutUrl="/login" />
           </div>
         </div>
       </div>
@@ -111,7 +112,7 @@ export default function NavbarDashboard() {
           </NavLink>
           <div className="pt-2 flex items-center justify-between border-t">
             <span className="text-sm text-gray-500 font-medium">Account</span>
-            <UserButton afterSignOutUrl="/login" />
+            <AppUserButton afterSignOutUrl="/login" />
           </div>
         </div>
       </div>

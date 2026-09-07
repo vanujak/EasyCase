@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser, useAuth, UserButton } from "@clerk/react";
+import { useUser, useAuth } from "@clerk/react";
+import AppUserButton from "../../components/AppUserButton.jsx";
 import { apiFetch } from "../../lib/api.js";
 import { useLawyerProfile } from "../../context/AuthContext.jsx";
 
@@ -94,7 +95,7 @@ export default function Onboarding() {
             />
             <span className="text-2xl font-bold text-gray-900">EasyCase</span>
           </div>
-          <UserButton afterSignOutUrl="/login" />
+          <AppUserButton afterSignOutUrl="/login" />
         </div>
       </div>
 
