@@ -1,12 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import NavbarDashboard from "../../components/NavbarDashboard.jsx";
 import { SRI_LANKA_DISTRICTS } from "../../constants/districts.js";
-
-const API = import.meta.env.VITE_API_URL;
+import { apiFetch } from "../../lib/api.js";
 
 export default function Clients() {
-  const token = localStorage.getItem("token");
-
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -49,9 +46,8 @@ export default function Clients() {
       const search = new URLSearchParams();
       if (q.trim()) search.set("q", q.trim());
 
-      const res = await fetch(
-        `${API}/api/clients${search.toString() ? `?${search}` : ""}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+      const res = await apiFetch(
+        `/api/clients${search.toString() ? `?${search}` : ""}`
       );
 
       const data = await res.json();
@@ -117,16 +113,12 @@ export default function Clients() {
 
     try {
       const url = editing
-        ? `${API}/api/clients/${editing._id}`
-        : `${API}/api/clients`;
+        ? `/api/clients/${editing._id}`
+        : `/api/clients`;
       const method = editing ? "PUT" : "POST";
 
-      const res = await fetch(url, {
+      const res = await apiFetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify(form),
       });
 
@@ -147,9 +139,8 @@ export default function Clients() {
       message: `Delete client "${client.name}"? This cannot be undone.`,
       onConfirm: async () => {
         try {
-          const res = await fetch(`${API}/api/clients/${client._id}`, {
+          const res = await apiFetch(`/api/clients/${client._id}`, {
             method: "DELETE",
-            headers: { Authorization: `Bearer ${token}` },
           });
 
           const data = await res.json();

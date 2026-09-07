@@ -3,9 +3,7 @@ import NavbarDashboard from "../../components/NavbarDashboard.jsx";
 import { SRI_LANKA_DISTRICTS, SRI_LANKA_PROVINCES } from "../../constants/geo.js";
 import { COURT_TYPES } from "../../constants/courts.js";
 import CaseDetailsOverlay from "../../components/CaseDetailsOverlay.jsx";
-
-const API = import.meta.env.VITE_API_URL;
-
+import { apiFetch } from "../../lib/api.js";
 const CLIENT_TYPES = [
   "individual",
   "company",
@@ -23,7 +21,6 @@ function normalizeSriLankaPhone(input = "") {
 }
 
 export default function Cases() {
-  const token = localStorage.getItem("token");
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -63,12 +60,8 @@ export default function Cases() {
       variant: "danger",
       onConfirm: async () => {
         try {
-          const res = await fetch(`${API}/api/cases/${id}/close`, {
+          const res = await apiFetch(`/api/cases/${id}/close`, {
             method: "PATCH",
-            headers: { 
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}` 
-            },
           });
           const data = await res.json();
           if (!res.ok) {
@@ -92,9 +85,8 @@ export default function Cases() {
       variant: "danger",
       onConfirm: async () => {
         try {
-          const res = await fetch(`${API}/api/cases/${id}`, {
+          const res = await apiFetch(`/api/cases/${id}`, {
             method: "DELETE",
-            headers: { Authorization: `Bearer ${token}` },
           });
           const data = await res.json();
           if (!res.ok) {
@@ -112,8 +104,8 @@ export default function Cases() {
   const fetchCases = async (query = "") => {
     setLoading(true); setError("");
     try {
-      const url = `${API}/api/cases${query ? `?q=${encodeURIComponent(query)}` : ""}`;
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+      const url = `/api/cases${query ? `?q=${encodeURIComponent(query)}` : ""}`;
+      const res = await apiFetch(url);
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Failed to load cases");
       setCases(data);
@@ -344,8 +336,6 @@ export default function Cases() {
 
 /* ----------------------------- CaseModal ----------------------------- */
 function CaseModal({ onClose, onSaved }) {
-  const token = localStorage.getItem("token");
-
   const [form, setForm] = useState({
     title: "",
     type: "",
@@ -361,9 +351,7 @@ function CaseModal({ onClose, onSaved }) {
     let isMounted = true;
     (async () => {
       try {
-        const res = await fetch(`${API}/api/cases/next-number`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await apiFetch("/api/cases/next-number");
         const data = await res.json();
         if (isMounted) setNextNumber(data?.next ?? null);
       } catch {
@@ -371,7 +359,7 @@ function CaseModal({ onClose, onSaved }) {
       }
     })();
     return () => { isMounted = false; };
-  }, [token]);
+  }, []);
 
   // client search (async)
   const [clientQuery, setClientQuery] = useState("");
@@ -418,9 +406,7 @@ function CaseModal({ onClose, onSaved }) {
   const searchClients = async (q) => {
     setSearching(true);
     try {
-      const res = await fetch(`${API}/api/clients?q=${encodeURIComponent(q)}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiFetch(`/api/clients?q=${encodeURIComponent(q)}`);
       const data = await res.json();
       setClientResults(Array.isArray(data) ? data : []);
     } catch {
@@ -453,9 +439,8 @@ function CaseModal({ onClose, onSaved }) {
     );
 
     try {
-      const res = await fetch(`${API}/api/clients`, {
+      const res = await apiFetch("/api/clients", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(clean),
       });
       const data = await res.json();
@@ -492,9 +477,8 @@ function CaseModal({ onClose, onSaved }) {
     );
 
     try {
-      const res = await fetch(`${API}/api/cases`, {
+      const res = await apiFetch("/api/cases", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
       const data = await res.json();

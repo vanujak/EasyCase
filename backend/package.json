@@ -9,6 +9,7 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@clerk/express": "^2.1.66",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",

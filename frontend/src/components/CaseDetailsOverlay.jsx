@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-
-const API = import.meta.env.VITE_API_URL;
+import { apiFetch } from "../lib/api.js";
 
 export default function CaseDetailOverlay({ caseId, onClose }) {
-  const token = localStorage.getItem("token");
   const [caseDoc, setCaseDoc] = useState(null);
   const [hearings, setHearings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,12 +15,8 @@ export default function CaseDetailOverlay({ caseId, onClose }) {
     setError("");
     try {
       const [cRes, hRes] = await Promise.all([
-        fetch(`${API}/api/cases/${caseId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${API}/api/hearings?caseId=${caseId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        apiFetch(`/api/cases/${caseId}`),
+        apiFetch(`/api/hearings?caseId=${caseId}`),
       ]);
       const c = await cRes.json();
       const h = await hRes.json();
@@ -257,8 +251,6 @@ function TimelineRow({ item }) {
 
 /* --------------------------- Hearing Modal --------------------------- */
 function HearingModal({ caseId, onClose, onSaved }) {
-  const token = localStorage.getItem("token");
-
   const [form, setForm] = useState({
     date: "", 
     notes: "",
@@ -304,9 +296,8 @@ function HearingModal({ caseId, onClose, onSaved }) {
         nextDate: toIsoDateOnly(form.nextDate),
       };
 
-      const res = await fetch(`${API}/api/hearings`, {
+      const res = await apiFetch("/api/hearings", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
       const data = await res.json();

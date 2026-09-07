@@ -1,15 +1,15 @@
 import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
-
+import { useAuth, UserButton } from "@clerk/react";
 
 export default function NavbarHome() {
   const [open, setOpen] = useState(false);
+  const { isSignedIn } = useAuth();
   
   const base = "px-3 py-2 rounded-lg font-medium text-lg transition-colors hover:bg-blue-50 hover:text-blue-700";
   const active = "px-3 py-2 rounded-lg font-semibold text-lg bg-blue-100 text-blue-800";
 
   const cls = ({ isActive }) => (isActive ? active : base);
-
 
   return (
     <nav className="border-b bg-white">
@@ -18,7 +18,6 @@ export default function NavbarHome() {
           <img src="/easy-case-logo.png" alt="EasyCase logo" className="h-15 w-15 object-contain" />
           <span className="!text-[30px] font-semibold">EasyCase</span>
         </Link>
-
 
         {/* Animated hamburger button */}
         <button 
@@ -64,31 +63,61 @@ export default function NavbarHome() {
           </svg>
         </button>
 
-
-        <div className="hidden md:flex items-center gap-2">
-          <NavLink to="/login" className={cls}>Log in</NavLink>
-          <NavLink to="/signup" className={cls}>Sign up</NavLink>
+        {/* Desktop navigation */}
+        <div className="hidden md:flex items-center gap-3">
           <NavLink to="/contact" className={cls}>Contact Us</NavLink>
+
+          {!isSignedIn ? (
+            <>
+              <NavLink to="/login" className={cls}>Log in</NavLink>
+              <NavLink
+                to="/signup"
+                className="px-4 py-2 rounded-lg font-semibold bg-black text-white hover:bg-gray-800 transition"
+              >
+                Sign up
+              </NavLink>
+            </>
+          ) : (
+            <>
+              <NavLink to="/dashboard" className={cls}>Dashboard</NavLink>
+              <div className="ml-2">
+                <UserButton afterSignOutUrl="/" />
+              </div>
+            </>
+          )}
         </div>
       </div>
 
-
-      {/* Mobile menu with smooth slide-down animation */}
+      {/* Mobile menu */}
       <div 
         className={`md:hidden border-t bg-white overflow-hidden transition-all duration-300 ease-in-out ${
           open ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
         <div className="mx-auto max-w-6xl px-4 py-3 flex flex-col gap-2">
-          <NavLink to="/login" onClick={() => setOpen(false)} className={cls}>
-            Log in
-          </NavLink>
-          <NavLink to="/signup" onClick={() => setOpen(false)} className={cls}>
-            Sign up
-          </NavLink>
           <NavLink to="/contact" onClick={() => setOpen(false)} className={cls}>
             Contact Us
           </NavLink>
+
+          {!isSignedIn ? (
+            <>
+              <NavLink to="/login" onClick={() => setOpen(false)} className={cls}>
+                Log in
+              </NavLink>
+              <NavLink to="/signup" onClick={() => setOpen(false)} className={cls}>
+                Sign up
+              </NavLink>
+            </>
+          ) : (
+            <>
+              <NavLink to="/dashboard" onClick={() => setOpen(false)} className={cls}>
+                Dashboard
+              </NavLink>
+              <div className="pt-2 px-3">
+                <UserButton afterSignOutUrl="/" />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </nav>

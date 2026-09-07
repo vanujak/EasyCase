@@ -1,32 +1,81 @@
-// ES modules
+import { getAuth, clerkClient } from "@clerk/express";
 import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-export function requireAuth(req, res, next) {
-  const raw = req.headers.authorization || "";
-  const token = raw.startsWith("Bearer ") ? raw.slice(7) : raw;
-
-  if (!token) return res.status(401).json({ error: "No token provided" });
-
+/**
+ * Authenticate request with Clerk (or fallback JWT) and resolve/create MongoDB User.
+ * Populates req.userId (MongoDB ObjectId) and req.user.
+ */
+export async function requireAuth(req, res, next) {
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = payload.sub || payload.id; // set by your login
-    next();
-  } catch {
+    const auth = getAuth(req);
+    const clerkId = auth?.userId;
+
+    if (clerkId) {
+      let user = await User.findOne({ clerkId });
+
+      if (!user) {
+        // Fetch user info from Clerk to initialize MongoDB record
+        try {
+          const clerkUser = await clerkClient.users.getUser(clerkId);
+          const email =
+            clerkUser.emailAddresses?.find(
+              (e) => e.id === clerkUser.primaryEmailAddressId
+            )?.emailAddress ||
+            clerkUser.emailAddresses?.[0]?.emailAddress ||
+            "";
+          const name =
+            [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ") ||
+            clerkUser.username ||
+            "";
+
+          user = await User.create({
+            clerkId,
+            email,
+            name,
+            onboardingCompleted: false,
+          });
+        } catch (fetchErr) {
+          console.error("Failed to fetch Clerk user details:", fetchErr);
+          // Fallback minimal record
+          user = await User.create({
+            clerkId,
+            email: `${clerkId}@clerk.placeholder`,
+            name: "",
+            onboardingCompleted: false,
+          });
+        }
+      }
+
+      req.userId = user._id;
+      req.user = user;
+      return next();
+    }
+
+    // Fallback: Check for legacy JWT token
+    const raw = req.headers.authorization || "";
+    const token = raw.startsWith("Bearer ") ? raw.slice(7) : raw;
+
+    if (token && process.env.JWT_SECRET) {
+      try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET);
+        const legacyId = payload.sub || payload.id;
+        const legacyUser = await User.findById(legacyId);
+        if (legacyUser) {
+          req.userId = legacyUser._id;
+          req.user = legacyUser;
+          return next();
+        }
+      } catch {
+        // Legacy verify failed, proceed to unauthorized
+      }
+    }
+
     return res.status(401).json({ error: "Unauthorized" });
-  }
-}
-export default function authMiddleware(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  if (!authHeader) return res.status(401).json({ error: "No token provided" });
-
-  const token = authHeader.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "Invalid token" });
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.id; // attach userId to request
-    next();
   } catch (err) {
-    return res.status(401).json({ error: "Token is not valid" });
+    console.error("Auth middleware error:", err);
+    return res.status(500).json({ error: "Internal authentication error" });
   }
 }
+
+export default requireAuth;
