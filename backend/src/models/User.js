@@ -1,30 +1,22 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
 
 // Sri Lankan mobile: 07XXXXXXXX or +947XXXXXXXX (70/71/72/75/76/77/78)
-const sriLankaMobile = /^(?:\+94|0)7(?:0|1|2|5|6|7|8)\d{7}$/;
+export const sriLankaMobile = /^(?:\+94|0)7(?:0|1|2|5|6|7|8)\d{7}$/;
 
 const userSchema = new mongoose.Schema(
   {
-    name:      { type: String, required: true, trim: true },
-    email:     { type: String, required: true, unique: true, lowercase: true, trim: true },
-    mobile:    { type: String, required: true, match: sriLankaMobile },
-    dob:       { type: Date, required: true },
-    gender:    { type: String, enum: ["Male", "Female"], required: true },
-    barRegNo:  { type: String, required: true, unique: true, trim: true },
-    passwordHash: { type: String, required: true }, // store HASH, not plain password
-    isActive:  { type: Boolean, default: true }
+    clerkId:             { type: String, required: true, unique: true, index: true },
+    email:               { type: String, required: true, unique: true, lowercase: true, trim: true },
+    name:                { type: String, default: "", trim: true },
+    mobile:              { type: String, match: sriLankaMobile, sparse: true },
+    dob:                 { type: Date },
+    gender:              { type: String, enum: ["Male", "Female"] },
+    barRegNo:            { type: String, unique: true, sparse: true, trim: true },
+    onboardingCompleted: { type: Boolean, default: false },
+    isActive:            { type: Boolean, default: true }
   },
   { timestamps: true }
 );
 
+export default mongoose.model("User", userSchema);
 
-// helper methods
-userSchema.methods.setPassword = async function (plain) {
-  this.passwordHash = await bcrypt.hash(plain, 10);
-};
-userSchema.methods.verifyPassword = function (plain) {
-  return bcrypt.compare(plain, this.passwordHash);
-};
-
-export default mongoose.model("User", userSchema); // collection: users

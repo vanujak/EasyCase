@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import { clerkMiddleware } from "@clerk/express";
 import { connectDB } from "./db/mongoose.js";
 import authRoutes from "./routes/auth.routes.js";
 import authMiddleware from "./middleware/auth.js";
@@ -20,6 +21,7 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] // Added PATCH here
 }));
 app.use(express.json());
+app.use(clerkMiddleware());
 
 // connect to Atlas before serving requests
 await connectDB(process.env.MONGODB_URI); // FIXED: Added .env back

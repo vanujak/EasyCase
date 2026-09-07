@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User, { sriLankaMobile } from "../models/User.js";
 import jwt from "jsonwebtoken";
 
 export async function signup(req, res) {
@@ -65,10 +65,15 @@ export async function login(req, res) {
     res.status(500).json({ error: "login_failed" });
   }
 }
+
+/**
+ * GET /auth/me
+ * Returns current authenticated user and onboarding completion status
+ */
 export async function me(req, res) {
   try {
     const user = await User.findById(req.userId)
-      .select("name email mobile barRegNo createdAt")
+      .select("name email mobile dob gender barRegNo onboardingCompleted createdAt")
       .lean();
     if (!user) return res.status(404).json({ error: "User not found" });
 
@@ -77,7 +82,10 @@ export async function me(req, res) {
       name: user.name,
       email: user.email,
       mobile: user.mobile,
+      dob: user.dob,
+      gender: user.gender,
       barRegNo: user.barRegNo,
+      onboardingCompleted: !!user.onboardingCompleted,
       createdAt: user.createdAt,
     });
   } catch (err) {
@@ -85,3 +93,59 @@ export async function me(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+/**
+ * PUT /auth/profile
+ * Completes lawyer onboarding with Sri Lankan mobile, dob, gender, and BAR reg no
+ */
+export async function updateProfile(req, res) {
+  try {
+    const { name, mobile, dob, gender, barRegNo } = req.body;
+
+    if (!mobile || !dob || !gender || !barRegNo) {
+      return res.status(400).json({
+        error: "Mobile, Date of Birth, Gender, and BAR Association Reg. No. are required",
+      });
+    }
+
+    if (!sriLankaMobile.test(mobile)) {
+      return res.status(400).json({
+        error: "Invalid Sri Lankan mobile format. Use 07XXXXXXXX or +947XXXXXXXX",
+      });
+    }
+
+    // Check if barRegNo is taken by another user
+    const existingBar = await User.findOne({
+      barRegNo: barRegNo.trim(),
+      _id: { $ne: req.userId },
+    });
+    if (existingBar) {
+      return res.status(409).json({ error: "BAR Association Reg. No. already registered" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.userId,
+      {
+        ...(name?.trim() ? { name: name.trim() } : {}),
+        mobile: mobile.trim(),
+        dob: new Date(dob),
+        gender,
+        barRegNo: barRegNo.trim(),
+        onboardingCompleted: true,
+      },
+      { new: true }
+    ).select("name email mobile dob gender barRegNo onboardingCompleted");
+
+    res.json({
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (err) {
+    if (err?.code === 11000) {
+      const field = Object.keys(err.keyPattern || {})[0] || "field";
+      return res.status(409).json({ error: `${field} already exists` });
+    }
+    console.error("PUT /auth/profile error:", err);
+    res.status(500).json({ error: "Failed to update profile" });
+  }
+}

@@ -1,26 +1,23 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
-
+import { UserButton, useClerk } from "@clerk/react";
 
 export default function NavbarDashboard() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-
+  const { signOut } = useClerk();
 
   const base =
     "px-3 py-2 rounded-lg font-medium text-lg transition-colors hover:bg-blue-50 hover:text-blue-700";
   const active =
     "px-3 py-2 rounded-lg font-semibold text-lg bg-blue-100 text-blue-800";
 
-
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    await signOut({ redirectUrl: "/login" });
   };
 
-
   const cls = ({ isActive }) => (isActive ? active : base);
-
 
   return (
     <nav className="border-b bg-white">
@@ -33,7 +30,6 @@ export default function NavbarDashboard() {
           />
           <span className="!text-[30px] font-semibold">EasyCase</span>
         </Link>
-
 
         {/* Animated hamburger button */}
         <button
@@ -79,9 +75,8 @@ export default function NavbarDashboard() {
           </svg>
         </button>
 
-
-        {/* desktop */}
-        <div className="hidden md:flex items-center gap-2">
+        {/* Desktop */}
+        <div className="hidden md:flex items-center gap-3">
           <NavLink to="/dashboard" className={cls}>
             Dashboard
           </NavLink>
@@ -92,18 +87,13 @@ export default function NavbarDashboard() {
             Clients
           </NavLink>
 
-
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 rounded-lg font-semibold bg-black text-white"
-          >
-            Logout
-          </button>
+          <div className="ml-2">
+            <UserButton afterSignOutUrl="/login" />
+          </div>
         </div>
       </div>
 
-
-      {/* Mobile menu with smooth slide-down animation */}
+      {/* Mobile menu */}
       <div 
         className={`md:hidden border-t bg-white overflow-hidden transition-all duration-300 ease-in-out ${
           open ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
@@ -119,15 +109,10 @@ export default function NavbarDashboard() {
           <NavLink to="/clients" onClick={() => setOpen(false)} className={cls}>
             Clients
           </NavLink>
-          <button
-            onClick={() => {
-              setOpen(false);
-              handleLogout();
-            }}
-            className="px-4 py-2 rounded-lg font-semibold bg-black text-white"
-          >
-            Logout
-          </button>
+          <div className="pt-2 flex items-center justify-between border-t">
+            <span className="text-sm text-gray-500 font-medium">Account</span>
+            <UserButton afterSignOutUrl="/login" />
+          </div>
         </div>
       </div>
     </nav>

@@ -2,11 +2,11 @@
 import { useEffect, useState } from "react";
 import NavbarDashboard from "../../components/NavbarDashboard.jsx";
 import CaseDetailsOverlay from "../../components/CaseDetailsOverlay.jsx";
-
-const API = import.meta.env.VITE_API_URL;
+import { apiFetch } from "../../lib/api.js";
+import { useLawyerProfile } from "../../context/AuthContext.jsx";
 
 export default function Dashboard() {
-  const token = localStorage.getItem("token");
+  const { profile } = useLawyerProfile();
 
   // header
   const [userName, setUserName] = useState("");
@@ -36,32 +36,24 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    if (profile?.name) {
+      setUserName(profile.name);
+    }
+  }, [profile]);
+
+  useEffect(() => {
     (async () => {
       setLoading(true);
       setErr("");
 
       try {
-        // 1) profile
-        try {
-          const meRes = await fetch(`${API}/auth/me`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          });
-          const me = await meRes.json();
-          if (meRes.ok && me?.name) setUserName(me.name);
-        } catch {
-          /* ignore name failure */
-        }
-
-        // 2) cases
-        const cRes = await fetch(`${API}/api/cases`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // 1) cases
+        const cRes = await apiFetch("/api/cases");
         const cases = await cRes.json();
         if (!cRes.ok) throw new Error(cases?.error || "Failed to load cases");
         setActiveCases(Array.isArray(cases) ? cases.filter(c => c.status === "open").length : 0);
 
-        // 3) hearings (future nextDate only, and only from open cases)
+        // 2) hearings (future nextDate only, and only from open cases)
         const now = Date.now();
         const rows = [];
         
@@ -69,9 +61,7 @@ export default function Dashboard() {
         const openCases = Array.isArray(cases) ? cases.filter(c => c.status === "open") : [];
         
         for (const c of openCases) {
-          const hRes = await fetch(`${API}/api/hearings?caseId=${c._id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const hRes = await apiFetch(`/api/hearings?caseId=${c._id}`);
           const list = await hRes.json();
           if (!hRes.ok || !Array.isArray(list)) continue;
 
